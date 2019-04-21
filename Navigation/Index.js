@@ -103,7 +103,7 @@ const switchAuth = createSwitchNavigator({
         screen : HomeRoute
     }
 }, {
-    initialRouteName: 'ContentPage',
+    initialRouteName: 'FirstRender',
 })
 
 export default createAppContainer(switchAuth)
