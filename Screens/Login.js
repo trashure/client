@@ -6,7 +6,8 @@ import {
     Dimensions, TextInput,
     KeyboardAvoidingView, Image,
     Button, TouchableOpacity,
-    ActivityIndicator, Alert
+    ActivityIndicator, Alert,
+    AsyncStorage
 } from 'react-native'
 
 import Icon from "react-native-vector-icons/FontAwesome"
@@ -91,11 +92,15 @@ export default class Login extends Component {
                                                 }
                                             })
                                                 .then(({ data }) => {
-                                                    this._storeData(data.login.token)
                                                     this.props.navigation.navigate('ContentPage')
+                                                    console.log(data.login.token);
+                                                    
+                                                    this._storeData(data.login.token)
                                                 })
                                                 .catch(err => {
-                                                    Alert.alert('login failed')
+                                                    console.log(err);
+                                                    
+                                                    Alert.alert('login failed', JSON.stringify(err))
                                                 })
                                         }}
                                         title="sign in" />
@@ -113,9 +118,8 @@ export default class Login extends Component {
 
                         </View>
                     </KeyboardAvoidingView>
-                )
+                    )
                 }
-
                 </Mutation>
         )
     }

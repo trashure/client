@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Camera, Permissions, Location, } from 'expo';
-import { View, Text, TouchableOpacity, Dimensions } from 'react-native'
+import { View, Text, TouchableOpacity, 
+        Dimensions, Alert, AsyncStorage } from 'react-native'
 
 import Icon from "react-native-vector-icons/FontAwesome"
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons"
@@ -11,11 +12,14 @@ import { connect } from 'react-redux'
 
 import { sendRawData } from '../store/Actions/Api'
 
+import { Mutation } from 'react-apollo'
+import { createTrash } from '../graphQl/index.js'
+
 
 
 class ExpoCameraScreen extends Component {
     state = {
-
+        token: '',
         hasLocationPermission: null,
         hasCameraPermission: null,
         type: Camera.Constants.Type.back,
@@ -24,7 +28,8 @@ class ExpoCameraScreen extends Component {
     }
     async componentDidMount() {
         const { status } = await Permissions.askAsync(Permissions.CAMERA);
-        this.setState({ hasCameraPermission: status === 'granted' });
+        this.setState({ hasCameraPermission: status === 'granted' })
+        this._retrieveData()
 
     }
 
@@ -33,9 +38,29 @@ class ExpoCameraScreen extends Component {
         this.setState({ hasLocationPermission: status === 'granted' });
     }
 
-    async snapPhoto() {
+    _retrieveData = async () => {
+        try {
+            const value = await AsyncStorage.getItem('Token');
+            if (value !== null) {
+                this.setState({
+                    token : value
+                })
+            }
+        } catch (error) {
+            // Error retrieving data
+        }
+    }
+
+    snapPhoto = async (createTrash) => {
         console.log('Button Pressed');
-        let obj ={}
+
+
+
+        const { token, desciption } = this.state
+
+        console.log(token, "===ini token");
+        
+        let obj = {}
         if (this.camera) {
             console.log('Taking photo');
             const options = {
@@ -47,30 +72,35 @@ class ExpoCameraScreen extends Component {
 
                 return photo
             });
-            // console.log(photo)
             obj.base64 = photo.base64
 
-            Geolocation.getCurrentPosition(               
-                 (position) => {
-                    //  console.log(this.props.sendRawData(), "======");
-                     
-                    //  return position
-                     obj.longitude = position.coords.longitude
-                     obj.latitude = position.coords.latitude
-                    //  console.log(obj.latitude, "===");
-                     
-                    this.props.sendRawData(obj)
+            Geolocation.getCurrentPosition(
+                (position) => {
+                    obj.longitude = position.coords.longitude
+                    obj.latitude = position.coords.latitude
+
+                    createTrash({
+                        variables: {
+                            token: token,
+                            path: obj.base64,
+                            location: JSON.stringify(obj.longitude),
+                            description: 'test'
+                        }
+                    })
+                        .then(data => {
+                            console.log(data);
+                        })
+                        .catch(err => {
+                            Alert.alert(JSON.stringify(err))
+                            console.log(err);
+                        })
+
                 },
                 (error) => {
-                    // See error code charts below.
                     console.log(error.code, error.message);
                 },
                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-            );
-
-            // console.log(location)
-
-
+            )
         }
     }
 
@@ -82,69 +112,73 @@ class ExpoCameraScreen extends Component {
             return <Text>No access to camera</Text>;
         } else {
             return (
-                <View style={{ flex: 1 }}>
-                    <Camera
-                        style={{ flex: 1 }}
-                        type={this.state.type}
-                        ref={(ref) => { this.camera = ref }}>
-                        <View
-                            style={{
-                                flex: 1,
-                                backgroundColor: 'transparent',
-                                flexDirection: 'row',
-                                justifyContent: 'space-between'
 
-                            }}>
-
-                            <TouchableOpacity
+                <Mutation mutation={createTrash}>{(createTrash, { data }) => (
+                    <View style={{ flex: 1 }}>
+                        <Camera
+                            style={{ flex: 1 }}
+                            type={this.state.type}
+                            ref={(ref) => { this.camera = ref }}>
+                            <View
                                 style={{
-                                    marginLeft:deviceWidth*0.2,
-                                    flex: 0.1,
-                                    alignSelf: 'flex-end',
-                                    alignItems: 'flex-start',
-                                    // width: deviceWidth*0.3
-                                }}
-                                onPress={() => {
-                                    this.setState({
-                                        type: this.state.type === Camera.Constants.Type.back
-                                            ? Camera.Constants.Type.front
-                                            : Camera.Constants.Type.back,
-                                    });
+                                    flex: 1,
+                                    backgroundColor: 'transparent',
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between'
+
                                 }}>
-                                <MaterialIcon name="rotate-3d" color='white' size={24} />
-                            </TouchableOpacity>
 
-                            <TouchableOpacity
-                                onPress={this.snapPhoto.bind(this)}
-                                style={{
-                                    alignSelf: 'flex-end',
-                                    alignItems: 'flex-start',
-                                }}>
-                                <Icon name="camera" color='white' size={24} />
-                            </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={{
+                                        marginLeft: deviceWidth * 0.2,
+                                        flex: 0.1,
+                                        alignSelf: 'flex-end',
+                                        alignItems: 'flex-start',
+                                        // width: deviceWidth*0.3
+                                    }}
+                                    onPress={() => {
+                                        this.setState({
+                                            type: this.state.type === Camera.Constants.Type.back
+                                                ? Camera.Constants.Type.front
+                                                : Camera.Constants.Type.back,
+                                        });
+                                    }}>
+                                    <MaterialIcon name="rotate-3d" color='white' size={24} />
+                                </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={{
-                                    marginRight:deviceWidth*0.2,
-                                    flex: 0.1,
-                                    alignSelf: 'flex-end',
-                                    alignItems: 'flex-start',
-                                    // width: deviceWidth*0.3
-                                }}
-                                onPress={() => {
-                                    this.setState({
-                                        flash: this.state.flash === Camera.Constants.FlashMode.off
-                                            ? Camera.Constants.FlashMode.torch
-                                            : Camera.Constants.FlashMode.torch
-                                    });
-                                }}>
-                                <MaterialIcon name="flash" color='white' size={24} />
-                            </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={this.snapPhoto.bind(this, createTrash)}
+                                    style={{
+                                        alignSelf: 'flex-end',
+                                        alignItems: 'flex-start',
+                                    }}>
+                                    <Icon name="camera" color='white' size={24} />
+                                </TouchableOpacity>
 
-                        </View>
-                    </Camera>
+                                <TouchableOpacity
+                                    style={{
+                                        marginRight: deviceWidth * 0.2,
+                                        flex: 0.1,
+                                        alignSelf: 'flex-end',
+                                        alignItems: 'flex-start',
+                                        // width: deviceWidth*0.3
+                                    }}
+                                    onPress={() => {
+                                        this.setState({
+                                            flash: this.state.flash === Camera.Constants.FlashMode.off
+                                                ? Camera.Constants.FlashMode.torch
+                                                : Camera.Constants.FlashMode.torch
+                                        });
+                                    }}>
+                                    <MaterialIcon name="flash" color='white' size={24} />
+                                </TouchableOpacity>
 
-                </View>
+                            </View>
+                        </Camera>
+
+                    </View>
+                )}
+                </Mutation>
             );
         }
     }
@@ -161,4 +195,4 @@ const mapDispatchToProps = (dispatch) => ({
 })
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(ExpoCameraScreen)
+export default ExpoCameraScreen

@@ -13,3 +13,11 @@ export const register = gql` mutation {
                                     email
                                 }
                             }`
+
+export const createTrash = gql`mutation 
+                                    CreateTrash($token : String!, $path : String!, $location : String!, $description : String! ) {
+                                        createTrash (token : $token, path :$path, location :$location, description :$description ) {
+                                                    path,
+                                                    description
+                                                }
+                                            }`
