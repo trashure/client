@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
 import { Camera, Permissions, Location, } from 'expo';
-import { View, Text, TouchableOpacity, 
-        Dimensions, Alert, AsyncStorage } from 'react-native'
+import {
+    View, Text, TouchableOpacity,
+    Dimensions, Alert, AsyncStorage
+} from 'react-native'
 
 import Icon from "react-native-vector-icons/FontAwesome"
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons"
-import Geolocation from 'react-native-geolocation-service';
+// import Geolocation from 'react-native-geolocation-service';
+
 
 
 import { connect } from 'react-redux'
@@ -43,7 +46,7 @@ class ExpoCameraScreen extends Component {
             const value = await AsyncStorage.getItem('Token');
             if (value !== null) {
                 this.setState({
-                    token : value
+                    token: value
                 })
             }
         } catch (error) {
@@ -59,7 +62,7 @@ class ExpoCameraScreen extends Component {
         const { token, desciption } = this.state
 
         console.log(token, "===ini token");
-        
+
         let obj = {}
         if (this.camera) {
             console.log('Taking photo');
@@ -74,33 +77,41 @@ class ExpoCameraScreen extends Component {
             });
             obj.base64 = photo.base64
 
-            Geolocation.getCurrentPosition(
-                (position) => {
-                    obj.longitude = position.coords.longitude
-                    obj.latitude = position.coords.latitude
+            let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest })
 
-                    createTrash({
-                        variables: {
-                            token: token,
-                            path: obj.base64,
-                            location: JSON.stringify(obj.longitude),
-                            description: 'test'
-                        }
-                    })
-                        .then(data => {
-                            console.log(data);
-                        })
-                        .catch(err => {
-                            Alert.alert(JSON.stringify(err))
-                            console.log(err);
-                        })
+            let obj = {
+                latitude : location.coords.latitude,
+                longitude : location.coords.longitude
+            }
 
-                },
-                (error) => {
-                    console.log(error.code, error.message);
-                },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-            )
+            createTrash({
+                variables: {
+                    token: token,
+                    path: obj.base64,
+                    location: JSON.stringify(obj),
+                    description: 'test'
+                }
+            })
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(err => {
+                    Alert.alert(JSON.stringify(err))
+                    console.log(err);
+                })
+
+            // Geolocation.getCurrentPosition(
+            //     (position) => {
+            //         obj.longitude = position.coords.longitude
+            //         obj.latitude = position.coords.latitude
+
+
+            //     },
+            //     (error) => {
+            //         console.log(error.code, error.message);
+            //     },
+            //     { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+            // )
         }
     }
 

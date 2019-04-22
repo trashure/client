@@ -18,6 +18,7 @@ import Collection from '../Screens/Collection'
 import Icon from "react-native-vector-icons/FontAwesome"
 import MaterialIcon from "react-native-vector-icons/MaterialIcons"
 import { createMaterialBottomTabNavigator } from "react-navigation-material-bottom-tabs";
+import Detail from '../Screens/Detail';
 
 const LoginStackNav = createStackNavigator({
     LoginPage: {
@@ -81,9 +82,12 @@ const HomeRoute = createBottomTabNavigator({
             tabBarLabel: 'Collection',
             tabBarIcon: ({ tintColor }) => (<MaterialIcon name="collections" color={tintColor} size={24} />)
         }
+    },
+    Maps : {
+        screen : Detail
     }
 }, {
-        initialRouteName: 'Camera',
+        initialRouteName: 'Maps',
         tabBarOptions: {
             activeTintColor: 'skyblue',
             inactiveTintColor: 'grey',
