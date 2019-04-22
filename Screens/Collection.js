@@ -1,60 +1,68 @@
 import React, { Component } from 'react'
-import { View, Text, FlatList, Dimensions, Image, StyleSheet, TouchableOpacity, Modal } from 'react-native'
+import { View, Text, FlatList, Dimensions, Image, StyleSheet, TouchableOpacity, Modal, AsyncStorage } from 'react-native'
 import { AntDesign } from '@expo/vector-icons';
 import { Button } from 'react-native-paper';
+import { Query, Mutation, graphql } from 'react-apollo';
+import { getCollections } from '../graphQl'
 const { width, height } = Dimensions.get('window');
 
-const YourComponent = (items) => {
-    return (
-        <ThumbnailGallery items={items} />
-    )
-}
+
 
 export default class Collection extends Component {
     state = {
         modalVisible: false,
         selectionItem: {},
-        myCollection: [{
-            image: 'https://storage.googleapis.com/bawang/1555829582097trash.jpg',
-        },
-        {
-            image: 'https://static.ffx.io/images/$zoom_0.3531,$multiply_1,$ratio_1.777778,$width_1059,$x_0,$y_39/t_crop_custom/w_800/q_86,f_auto/3bfb486f79c605f67fe0db76bc469c9508d5946c'
-        },
-        {
-            image: 'https://cdn.vox-cdn.com/thumbor/0Zx0gt6gIoP3-Is56SfXIMzt4zE=/0x0:5478x3702/1200x800/filters:focal(2681x1290:3557x2166)/cdn.vox-cdn.com/uploads/chorus_image/image/62857108/1086343744.jpg.0.jpg'
-        },
-        {
-            image: 'https://cdn.vox-cdn.com/thumbor/0Zx0gt6gIoP3-Is56SfXIMzt4zE=/0x0:5478x3702/1200x800/filters:focal(2681x1290:3557x2166)/cdn.vox-cdn.com/uploads/chorus_image/image/62857108/1086343744.jpg.0.jpg'
-        },
-        {
-            image: 'https://cdn.vox-cdn.com/thumbor/0Zx0gt6gIoP3-Is56SfXIMzt4zE=/0x0:5478x3702/1200x800/filters:focal(2681x1290:3557x2166)/cdn.vox-cdn.com/uploads/chorus_image/image/62857108/1086343744.jpg.0.jpg'
-        },
-        {
-            image: 'https://cdn.vox-cdn.com/thumbor/0Zx0gt6gIoP3-Is56SfXIMzt4zE=/0x0:5478x3702/1200x800/filters:focal(2681x1290:3557x2166)/cdn.vox-cdn.com/uploads/chorus_image/image/62857108/1086343744.jpg.0.jpg'
-        },
-        {
-            image: 'https://cdn.vox-cdn.com/thumbor/0Zx0gt6gIoP3-Is56SfXIMzt4zE=/0x0:5478x3702/1200x800/filters:focal(2681x1290:3557x2166)/cdn.vox-cdn.com/uploads/chorus_image/image/62857108/1086343744.jpg.0.jpg'
-        }]
+        myCollection: [],
+    }
+
+    componentDidMount = () => {
+        this._retrieveData();
+    }
+
+    _retrieveData = async () => {
+        try {
+            const value = await AsyncStorage.getItem('Token');
+            if (value !== null) {
+                this.setState({
+                    token: value
+                })
+            }
+        } catch (error) {
+            // Error retrieving data
+        }
     }
 
     render() {
         return (
             <View>
-                <View style={s.collection}>
-                    {this.state.myCollection.map(e =>
-                        (
-                            <TouchableOpacity
-                                onPress={() => this.setState({ modalVisible: true, selectionItem: e })}
-                            >
-                                <Image
-                                    style={{ width: width / 3 - 3, height: width / 3 - 3, margin: 1 }}
-                                    source={{ uri: e.image }}
-                                />
-                            </TouchableOpacity>
-                        )
-                    )
-                    }
-                </View>
+
+                <Query query={getCollections} variables={{ token: this.state.token }}>
+                    {({ loading, error, data }) => {
+                        if (loading) return <View><Text>loading</Text></View>;
+                        if (error) return <View><Text>error</Text></View>;
+                        if (data) {
+                            return (
+                                <View style={s.collection}>
+                                    {
+                                        data.collections.map(e =>
+                                            (
+                                                <TouchableOpacity
+                                                    key={e._id}
+                                                    onPress={() => this.setState({ modalVisible: true, selectionItem: e })}                                        >
+                                                    <Image
+                                                        style={{ width: width / 3 - 3, height: width / 3 - 3, margin: 1 }}
+                                                        source={{ uri: e.path }}
+                                                    />
+                                                </TouchableOpacity>
+                                            )
+                                        )
+                                    }
+                                </View>
+                            )
+                        }
+                    }}
+                </Query>
+
 
                 {/* M O D A L */}
                 <Modal
@@ -67,7 +75,7 @@ export default class Collection extends Component {
                     <View style={{ marginTop: 22, justifyContent: 'center', alignItems: 'center' }}>
                         <Image
                             style={{ width, height: width }}
-                            source={{ uri: this.state.selectionItem.image }} />
+                            source={{ uri: this.state.selectionItem.path }} />
 
                         <TouchableOpacity
                             style={{ backgroundColor: 'gold', padding: 5 }}
