@@ -19,7 +19,7 @@ import { TextInput } from 'react-native-gesture-handler';
 
 
 
-class ExpoCameraScreen extends Component {
+class IoT extends Component {
     state = {
         loading: false,
         path: '',
@@ -263,4 +263,4 @@ const mapDispatchToProps = (dispatch) => ({
 })
 
 
-export default ExpoCameraScreen
+export default IoT

@@ -2,11 +2,14 @@ import React, { Component } from 'react'
 import {
     View, Text, Image,
     FlatList, Dimensions,
-    TouchableOpacity
+    TouchableOpacity,
+    AsyncStorage
 } from 'react-native'
 import { connect } from 'react-redux'
 import { fecthData } from '../store/Actions/Api'
 import Icon from 'react-native-vector-icons/Entypo'
+import { Query, Mutation, graphql } from 'react-apollo';
+import { getGarbages } from '../graphQl'
 
 class Home extends Component {
     static navigationOptions = (props) => {
@@ -15,67 +18,86 @@ class Home extends Component {
         }
     };
 
-    componentDidMount = () => {
-
-    }
     state = {
-        data: [
-            {
-                location: 'Tanah Kusir IV, Kebayoran baru, Jakarta selatan',
-                user: 'Adi Prasetyo',
-                image: 'https://storage.googleapis.com/bawang/1555829582097trash.jpg',
-                description: 'sampah sampah sampah sampah sampah kenapa orang suka sampah menyablkan sekalis sampah sampah',
-                createdAt: new Date()
-            },
-            {
-                location: 'Jalan Hang Jebat, Kebayoran lama, Jakarta selatan',
-                user: 'ahmad syukron',
-                image: 'https://static.ffx.io/images/$zoom_0.3531,$multiply_1,$ratio_1.777778,$width_1059,$x_0,$y_39/t_crop_custom/w_800/q_86,f_auto/3bfb486f79c605f67fe0db76bc469c9508d5946c',
-                description: 'sampah mulai menumpuk',
-                createdAt: new Date()
-            },
-            {
-                location: 'Jalan Raya Kebayoran, kebayoran baru, Jakarta selatan',
-                user: 'isro tri pambudi',
-                image: 'https://cdn.vox-cdn.com/thumbor/0Zx0gt6gIoP3-Is56SfXIMzt4zE=/0x0:5478x3702/1200x800/filters:focal(2681x1290:3557x2166)/cdn.vox-cdn.com/uploads/chorus_image/image/62857108/1086343744.jpg.0.jpg',
-                description: 'sampah seminggu ini',
-                createdAt: new Date()
-            }
-        ]
+        token: '',
+        data: []
     }
+
+    componentDidMount = () => {
+        this._retrieveData();
+    }
+
+    _retrieveData = async () => {
+        try {
+            const value = await AsyncStorage.getItem('Token');
+            if (value !== null) {
+                this.setState({
+                    token: value
+                })
+            }
+        } catch (error) {
+            // Error retrieving data
+        }
+    }
+
     render() {
         let { data } = this.state
         return (
+
             <View
                 style={{ flex: 1, alignItems: 'center' }}>
-                <FlatList
-                    data={data}
-                    renderItem={({ item }) =>
-                        <View
-                            style={{ flex: 1, width: deviceWidth * 0.95, borderBottomColor: 'black', marginTop: 20, minHeight: deviceHeight * 0.5, maxHeight: deviceHeight * 0.8 }}>
-                            <View>
-                                <Text
-                                    style={{ fontWeight: 'bold', fontSize: 20 }}>{item.user}</Text>
-                            </View>
-                            <View
-                                style={{ flexDirection: 'row' }}>
-                                {/* <Icon name="location" size={20} /> */}
-                                <Text>{item.location}</Text>
-                            </View>
-                            <Image
-                                style={{ flex: 1, minHeight: deviceHeight * 0.3, maxHeight: deviceHeight * 0.6, resizeMode: 'contain' }}
-                                source={{ uri: item.image }} />
-                            <View
-                                style={{ marginTop: 10 }}>
-                                <Text>{item.description}</Text>
-                            </View>
-                            <View>
-                                <Text
-                                    style={{ color: 'grey' }}>posted on {item.createdAt.toDateString()}</Text>
-                            </View>
-                        </View>}>
-                </FlatList>
-            </View>
+                {
+                    this.state.token ?
+                        (
+                            <Query query={getGarbages} variables={{ token: this.state.token }}>
+                                {({ loading, error, data }) => {
+                                    if (loading) return loading;
+                                    if (error) return error;
+                                    if (data) {
+                                        return (
+                                            <FlatList
+                                                data={data.garbages.reverse()}
+                                                keyExtractor={(item) => item._id}
+                                                renderItem={({ item }) =>
+                                                    <View
+                                                        style={{ flex: 1, width: deviceWidth * 0.95, borderBottomColor: 'black', marginTop: 20, minHeight: deviceHeight * 0.5, maxHeight: deviceHeight * 0.8 }}>
+                                                        <View>
+                                                            <Text
+                                                                style={{ fontWeight: 'bold', fontSize: 20 }}>{item.userID.name}</Text>
+                                                        </View>
+                                                        <View
+                                                            style={{ flexDirection: 'row' }}>
+                                                            <Text>{item.coordinate}</Text>
+                                                        </View>
+                                                        <Image
+                                                            style={{ flex: 1, minHeight: deviceHeight * 0.3, maxHeight: deviceHeight * 0.6, resizeMode: 'contain' }}
+                                                            source={{ uri: item.path }} />
+                                                        <View
+                                                            style={{ marginTop: 10 }}>
+                                                            <Text>{item.description}</Text>
+                                                        </View>
+                                                        <View>
+                                                            <Text
+                                                                style={{ color: 'grey' }}>posted on {item.createdAt}</Text>
+                                                        </View>
+                                                    </View>
+                                                }>
+                                            </FlatList>
+                                        )
+                                    }
+
+                                }}
+
+
+                            </Query>
+                        ) : (
+                            <Text>Loading</Text>
+                        )
+                }
+
+
+
+            </View >
         )
     }
 }
