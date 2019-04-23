@@ -24,6 +24,18 @@ mutation {
     }
 }`
 
+export const IOT = gql`
+mutation iot(
+    $path : String! ) {
+ iot (
+     path :$path
+     ) 
+    {
+        path
+    }
+}`
+
+
 export const createTrash = gql`
 mutation createTrash(
     $token : String!, 
@@ -50,11 +62,13 @@ export const getGarbages = gql`
 query garbages($token: String!){
         garbages(token: $token) {
             _id
+            title
             path
             description
             type
             createdAt
             coordinate
+            color
             userID{
                 name
             }
@@ -66,10 +80,12 @@ export const getCollections = gql`
 query collections($token: String!){
     collections(token: $token) {
             _id
+            title
             path
             description
             type
             createdAt
+            color
             coordinate
             userID{
                 name
