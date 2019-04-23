@@ -1,9 +1,18 @@
 import React, { Component } from 'react'
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
-import { Dimensions, View, Text, Picker } from 'react-native'
+import {
+    Dimensions, View,
+    Text, Picker,
+    Button, Image,
+    AsyncStorage
+} from 'react-native'
 
 const { width, height } = Dimensions.get('window')
-// const { Marker } = MapView
+
+import { Query } from 'react-apollo'
+import { getGarbages } from '../graphQl'
+import { ConvertCoordinate, ConvertToImage } from '../Helper'
+// import { Button } from 'react-native-paper';
 
 
 export default class Detail extends Component {
@@ -34,42 +43,63 @@ export default class Detail extends Component {
             }
         ]
     }
+
+    componentDidMount = () => {
+        this._retrieveData();
+    }
+
+    _retrieveData = async () => {
+        try {
+            const value = await AsyncStorage.getItem('Token');
+            if (value !== null) {
+                this.setState({
+                    token: value
+                })
+            }
+        } catch (error) {
+            // Error retrieving data
+        }
+    }
+
     render() {
         return (
-            <MapView
-                style={{ flex: 1, height: height * 1, width: width * 1 }}
-                provider={PROVIDER_GOOGLE}
-                zoomEnabled={true}
-                scrollEnabled={true}
-                showsScale={true}
-                region={{
-                    latitudeDelta: 0.1,
-                    longitudeDelta: 0.1,
-                    latitude: -6.259831,
-                    longitude: 106.782795,
-                }}
-            >
-                {this.state.data.map(e =>
-                    (<Marker
-                        pinColor={e.color}
-                        title={e.title}
-                        coordinate={e.coordinates}>
+            <Query query={getGarbages} variables={{ token: this.state.token }}>{
+                ({ loading, error, data }) => {
+                    if (loading) return loading
+                    if (error) return error
+                    if (data) return (
 
-                    </Marker>
+                        // <View>
+                        //     <Text>
+                        //     {JSON.stringify(data.garbages[10])}
+                        //     </Text>
+                        // </View>
+
+                        <MapView
+                            style={{ flex: 1, height: height * 1, width: width * 1 }}
+                            provider={PROVIDER_GOOGLE}
+                            zoomEnabled={true}
+                            scrollEnabled={true}
+                            showsScale={true}
+                            region={{
+                                latitudeDelta: 0.1,
+                                longitudeDelta: 0.1,
+                                latitude: -6.259831,
+                                longitude: 106.782795,
+                            }}
+                        >
+                            {
+                                data.garbages.map(e => (
+                                    <Marker
+                                        pinColor={ConvertToImage(e.type)}
+                                        coordinate={ConvertCoordinate(e.coordinate)}>
+                                    </Marker>
+                                ))
+                            }
+                        </MapView>
                     )
-                )}
-                <Picker
-                    selectedValue={this.state.category}
-                    style={{ height: 50, width: 100 }}
-                    onValueChange={(itemValue, itemIndex) =>
-                        this.setState({ language: itemValue })
-                    }>
-                    {/* <Picker.Item label="Java" value="java" />
-                    <Picker.Item label="JavaScript" value="js" /> */}
-                </Picker>
-
-            </MapView>
-
+                }}
+            </Query>
 
         )
     }

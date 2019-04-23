@@ -100,7 +100,7 @@ const HomeRoute = createBottomTabNavigator({
         }
     }
 }, {
-        initialRouteName: 'Collection',
+        initialRouteName: 'Maps',
         tabBarOptions: {
             activeTintColor: 'skyblue',
             inactiveTintColor: 'grey',
