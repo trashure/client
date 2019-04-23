@@ -55,6 +55,7 @@ query garbages($token: String!){
             type
             createdAt
             coordinate
+            color
             userID{
                 name
             }

@@ -33,6 +33,7 @@ export default class Login extends Component {
         // AsyncStorage.removeItem('Token', (error) => {
         //     console.log(error);
         // })
+        // this._storeData()
     }
 
     _storeData = async (token) => {
@@ -42,7 +43,7 @@ export default class Login extends Component {
             console.log(error);
         }
     }
-
+    
     _retrieveData = async () => {
         try {
             const value = await AsyncStorage.getItem('Token');

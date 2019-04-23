@@ -6,7 +6,7 @@ export const ConvertCoordinate = (object) => {
     let result = {}
     result.latitude = Number(data.latitude)
     result.longitude = Number(data.longitude)
-    // console.log(result, "======DATA")
+    console.log(result, "======DATA")
     return result
 
 }
