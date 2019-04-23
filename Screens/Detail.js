@@ -91,7 +91,7 @@ export default class Detail extends Component {
                             {
                                 data.garbages.map(e => (
                                     <Marker
-                                        pinColor={ConvertToImage(e.type)}
+                                        pinColor={e.color}
                                         coordinate={ConvertCoordinate(e.coordinate)}>
                                     </Marker>
                                 ))

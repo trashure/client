@@ -20,7 +20,7 @@ import TakePicture from '../Screens/TakePicture'
 import ExpoCameraScreen from '../Screens/ExpoCameraScreen'
 import Collection from '../Screens/Collection'
 import Detail from '../Screens/Detail';
-import IoT from '../Screens/IoT';
+import Iot from '../Screens/Iot';
 
 const LoginStackNav = createStackNavigator({
     LoginPage: {
@@ -92,15 +92,15 @@ const HomeRoute = createBottomTabNavigator({
             tabBarIcon: ({ tintColor }) => (<MaterialCommunityIcons name="map-marker-multiple" color={tintColor} size={24} />)
         }
     },
-    IoT: {
-        screen: IoT,
+    Iot: {
+        screen: Iot,
         navigationOptions: {
             tabBarLabel: 'IoT',
             tabBarIcon: ({ tintColor }) => (<MaterialIcons name="device-hub" color={tintColor} size={24} />)
         }
     }
 }, {
-        initialRouteName: 'Home',
+        initialRouteName: 'Iot',
         tabBarOptions: {
             activeTintColor: 'gold',
             inactiveTintColor: 'white',

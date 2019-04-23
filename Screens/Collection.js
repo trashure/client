@@ -72,17 +72,41 @@ export default class Collection extends Component {
                     onRequestClose={() => {
                         Alert.alert('Modal has been closed.');
                     }}>
-                    <View style={{ marginTop: 22, justifyContent: 'center', alignItems: 'center' }}>
-                        <Image
-                            style={{ width, height: width }}
-                            source={{ uri: this.state.selectionItem.path }} />
+                    <View style={{ flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center' }}>
+                        <FlatList
+                            data={[this.state.selectionItem]}
+                            keyExtractor={(item) => item._id}
+                            renderItem={({ item }) =>
+                                <View>
+                                    <Image
+                                        style={{ width, height: width }}
+                                        source={{ uri: item.path }} />
+                                    <Text style={{ fontSize: 25 }}>
+                                        {item.title}</Text>
+                                    <Text>by {item.userID.name}</Text>
+                                    <Text style={{ color: 'grey' }}>
+                                        posted on {new Date(item.createdAt).toLocaleString()}</Text>
+                                    <Text>ini nanti alamat</Text>
 
-                        <TouchableOpacity
-                            style={{ backgroundColor: 'gold', padding: 5 }}
-                            onPress={() => this.setState({ modalVisible: false })}>
-                            <Text style={{ size: 30 }}>Okey</Text>
-                        </TouchableOpacity>
-
+                                    <Text style={{ marginTop: 10 }}>Description:</Text>
+                                    <Text>{item.description}</Text>
+                                    <View>
+                                        <TouchableOpacity
+                                            style={{
+                                                backgroundColor: 'gold',
+                                                marginTop:10,
+                                                padding: 5,
+                                                width: 80,
+                                                justifyContent: 'center',
+                                                alignItems: 'center'
+                                            }}
+                                            onPress={() => this.setState({ modalVisible: false })}>
+                                            <Text style={{ size: 30 }}>Okey</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            }>
+                        </FlatList>
                     </View>
                 </Modal>
             </View>
