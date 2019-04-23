@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Camera, Permissions, Location, } from 'expo';
 import {
     View, Text, TouchableOpacity,
-    Dimensions, Alert, AsyncStorage, Image, Button, ActivityIndicator
+    Dimensions, Alert, AsyncStorage, Image, Button, ActivityIndicator, StyleSheet, KeyboardAvoidingView
 } from 'react-native'
 
 import Icon from "react-native-vector-icons/FontAwesome"
@@ -14,8 +14,9 @@ import { connect } from 'react-redux'
 import { sendRawData } from '../store/Actions/Api'
 
 import { Mutation } from 'react-apollo'
-import { createTrash } from '../graphQl/index.js'
+import { createTrash, getGarbages, getCollections } from '../graphQl/index.js'
 import { TextInput } from 'react-native-gesture-handler';
+import { MaterialIcons } from '@expo/vector-icons';
 
 
 
@@ -117,56 +118,66 @@ class ExpoCameraScreen extends Component {
         </View>)
         if (imageUri.length > 0)
             return (
-                <Mutation mutation={createTrash}>{(createTrash, { data }) => (
-                    <View
-                        style={{ flex: 1, width: deviceWidth * 1, height: deviceHeight * 1 }}>
-                        <Image
-                            style={{ height: 300, width: 300 }}
-                            source={{ uri: imageUri }} />
-                        <TextInput
-                            value={title}
-                            onChangeText={(title) => this.setState({ title })}
-                            style={{ width: deviceWidth * 0.8 }}
-                            placeholder="TITLE" />
-                        <TextInput
-                            value={description}
-                            onChangeText={(description) => this.setState({ description })}
-                            style={{ width: deviceWidth * 0.8 }}
-                            placeholder="DESCRIPTION" />
-                        <View
-                            style={{ flex: 1, maxHeight: deviceHeight * 0.06, marginTop: 3, marginLeft: deviceWidth * 0.3, marginRight: deviceWidth * 0.3 }}>
-                            <Button
-                                style={{ color: 'black' }}
-                                onPress={() => {
-                                    this.setState({
-                                        loading: true
-                                    })
-                                    const { token, path, coordinate, title, description } = this.state
-                                    createTrash({
-                                        variables: {
-                                            token,
-                                            path,
-                                            coordinate: JSON.stringify(coordinate),
-                                            title,
-                                            createdAt: new Date().toISOString(),
-                                            description
-                                        }
-                                    })
-                                        .then(data => {
-                                            this.props.navigation.navigate('Home')
-                                        })
-                                        .catch(err => {
-                                            Alert.alert(JSON.stringify(err))
-                                            console.log(err);
-                                        })
+                <Mutation mutation={createTrash} refetchQueries={[{ query: getCollections }]}>
+                    {(createTrash, { data }) => (
+                        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+                            <View style={s.layout}>
+                                <Image
+                                    style={{ height: 300, width: 300, marginTop: 20 }}
+                                    source={{ uri: imageUri }} />
+                                <View style={s.input}>
+                                    <MaterialIcons
+                                        name="title" size={20} color="black" style={s.icon} />
+                                    <TextInput
+                                        value={title}
+                                        onChangeText={(title) => this.setState({ title })}
+                                        style={s.textInput}
+                                        placeholder="title" />
+                                </View>
+                                <View style={s.input}>
+                                    <MaterialIcons
+                                        name="description" size={20} color="black" style={s.icon} />
+                                    <TextInput
+                                        value={description}
+                                        onChangeText={(description) => this.setState({ description })}
+                                        style={s.textInput}
+                                        placeholder="description" />
+                                </View>
 
 
-                                }}
-                                title="sign in" />
-                        </View>
+                                <View
+                                    style={s.button}>
+                                    <Button
+                                        style={{ color: 'white', backgroundColor: "#2d3436" }}
+                                        onPress={() => {
+                                            this.setState({
+                                                loading: true
+                                            })
+                                            const { token, path, coordinate, title, description } = this.state
+                                            createTrash({
+                                                variables: {
+                                                    token,
+                                                    path,
+                                                    coordinate: JSON.stringify(coordinate),
+                                                    title,
+                                                    createdAt: new Date().toISOString(),
+                                                    description
+                                                }
+                                            })
+                                                .then(data => {
+                                                    this.props.navigation.navigate('Home')
+                                                })
+                                                .catch(err => {
+                                                    Alert.alert(JSON.stringify(err))
+                                                    console.log(err);
+                                                })
+                                        }}
+                                        title="P O S T" />
+                                </View>
 
-                    </View>
-                )}
+                            </View>
+                        </KeyboardAvoidingView>
+                    )}
                 </Mutation>)
 
 
@@ -262,5 +273,37 @@ const mapDispatchToProps = (dispatch) => ({
     sendRawData: (object) => dispatch(sendRawData(object))
 })
 
+const s = StyleSheet.create({
+    layout: {
+        flex: 1,
+        height: deviceHeight,
+        alignItems: 'center',
+    },
+    input: {
+        flex: 1,
+        maxHeight: deviceHeight * 0.08,
+        marginBottom: 3,
+        marginRight: deviceWidth * 0.1,
+        marginLeft: deviceWidth * 0.1,
+        backgroundColor: 'white',
+        flexDirection: "row",
+        alignItems: 'center',
+        borderRadius: 15
+    },
+    icon: {
+        marginRight: 10,
+        marginLeft: 10
+    },
+    textInput: {
+        width: deviceWidth * 0.8,
+    },
+    button: {
+        flex: 1,
+        maxHeight: deviceHeight * 0.06,
+        marginTop: 3,
+        marginLeft: deviceWidth * 0.3,
+        marginRight: deviceWidth * 0.3,
+    }
+})
 
 export default ExpoCameraScreen

@@ -7,7 +7,8 @@ import {
     KeyboardAvoidingView, Image,
     Button, TouchableOpacity,
     ActivityIndicator, Alert,
-    AsyncStorage
+    AsyncStorage,
+    StyleSheet
 } from 'react-native'
 
 import Icon from "react-native-vector-icons/FontAwesome"
@@ -28,7 +29,10 @@ export default class Login extends Component {
     }
 
     componentDidMount = () => {
-        this._retrieveData()
+        this._retrieveData();
+        // AsyncStorage.removeItem('Token', (error) => {
+        //     console.log(error);
+        // })
     }
 
     _storeData = async (token) => {
@@ -56,7 +60,7 @@ export default class Login extends Component {
                 <Mutation mutation={login}>{(login, { data }) => (
 
                     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
-                        <View style={{ flex: 1, height: deviceHeight * 1, backgroundColor: 'black' }}>
+                        <View style={s.layout}>
                             <View style={{ flex: 1, alignItems: 'center', }}>
                                 <Image
                                     style={{ flex: 1, width: deviceWidth * 0.5, resizeMode: 'contain' }}
@@ -64,24 +68,24 @@ export default class Login extends Component {
                                 />
                             </View>
                             <View style={{ flex: 1, maxHeight: deviceHeight * 0.5, justifyContent: 'center' }}>
-                                <View style={{ flex: 1, maxHeight: deviceHeight * 0.08, marginBottom: 3, marginRight: deviceWidth * 0.1, marginLeft: deviceWidth * 0.1, backgroundColor: 'white', flexDirection: "row", alignItems: 'center' }}>
+                                <View style={s.input}>
                                     <FeatherIcon
-                                        name="user" size={20} color="black" />
+                                        name="user" size={20} color="black" style={s.icon} />
                                     <TextInput
                                         onChangeText={(email) => this.setState({ email })}
-                                        style={{ width: deviceWidth * 0.8 }}
+                                        style={s.textInput}
                                         placeholder="email" />
                                 </View>
-                                <View style={{ flex: 1, maxHeight: deviceHeight * 0.08, marginBottom: 3, marginRight: deviceWidth * 0.1, marginLeft: deviceWidth * 0.1, backgroundColor: 'white', flexDirection: "row", alignItems: 'center' }}>
+                                <View style={s.input}>
                                     <FeatherIcon
-                                        name="lock" size={20} color="black" />
+                                        name="lock" size={20} color="black" style={s.icon} />
                                     <TextInput
                                         onChangeText={(password) => this.setState({ password })}
-                                        style={{ width: deviceWidth * 0.8 }}
+                                        style={s.textInput}
                                         placeholder="password" />
                                 </View>
                                 <View
-                                    style={{ flex: 1, maxHeight: deviceHeight * 0.06, marginTop: 3, marginLeft: deviceWidth * 0.3, marginRight: deviceWidth * 0.3 }}>
+                                    style={s.button}>
                                     <Button
                                         onPress={() => {
                                             const { email, password } = this.state
@@ -94,31 +98,27 @@ export default class Login extends Component {
                                                 .then(({ data }) => {
                                                     this.props.navigation.navigate('ContentPage')
                                                     console.log(data.login.token);
-                                                    
                                                     this._storeData(data.login.token)
                                                 })
                                                 .catch(err => {
                                                     console.log(err);
-                                                    
                                                     Alert.alert('login failed', JSON.stringify(err))
                                                 })
                                         }}
                                         title="sign in" />
                                 </View>
                                 <View
-                                    style={{ flex: 1, flexDirection: 'row', marginLeft: deviceWidth * 0.2, marginRight: deviceWidth * 0.2, maxHeight: deviceHeight * 0.06 }}>
+                                    style={s.register}>
                                     <Text style={{ color: 'white' }}>Don't have account ? </Text>
                                     <TouchableOpacity
-                                        onPress={()=> this.props.navigation.navigate('Register')}
-
-                                    ><Text style={{ color: 'skyblue' }}>register</Text></TouchableOpacity>
+                                        onPress={() => this.props.navigation.navigate('Register')} >
+                                        <Text style={{ color: 'skyblue' }}>register</Text></TouchableOpacity>
                                 </View>
-
                             </View>
 
                         </View>
                     </KeyboardAvoidingView>
-                    )
+                )
                 }
                 </Mutation>
         )
@@ -127,4 +127,43 @@ export default class Login extends Component {
 
 const deviceHeight = Dimensions.get('window').height
 const deviceWidth = Dimensions.get('window').width
-
+const s = StyleSheet.create({
+    register: {
+        flex: 1,
+        flexDirection: 'row',
+        marginLeft: deviceWidth * 0.2,
+        marginRight: deviceWidth * 0.2,
+        maxHeight: deviceHeight * 0.06,
+        justifyContent:'center',
+    },
+    layout: {
+        flex: 1,
+        height: deviceHeight,
+        backgroundColor: '#2d3436',
+    },
+    input: {
+        flex: 1,
+        maxHeight: deviceHeight * 0.08,
+        marginBottom: 3,
+        marginRight: deviceWidth * 0.1,
+        marginLeft: deviceWidth * 0.1,
+        backgroundColor: 'white',
+        flexDirection: "row",
+        alignItems: 'center',
+        borderRadius: 15
+    },
+    icon: {
+        marginRight: 10,
+        marginLeft: 10
+    },
+    textInput: {
+        width: deviceWidth * 0.8,
+    },
+    button: {
+        flex: 1,
+        maxHeight: deviceHeight * 0.06,
+        marginTop: 3,
+        marginLeft: deviceWidth * 0.3,
+        marginRight: deviceWidth * 0.3,
+    }
+})

@@ -100,12 +100,12 @@ const HomeRoute = createBottomTabNavigator({
         }
     }
 }, {
-        initialRouteName: 'Collection',
+        initialRouteName: 'Home',
         tabBarOptions: {
-            activeTintColor: 'skyblue',
-            inactiveTintColor: 'grey',
+            activeTintColor: 'gold',
+            inactiveTintColor: 'white',
             style: {
-                backgroundColor: 'black',
+                backgroundColor: '#2d3436',
                 height: 60
             },
             showIcon: true

@@ -2,19 +2,24 @@ import React, { Component } from 'react'
 import {
     View, Text, Image,
     FlatList, Dimensions,
-    TouchableOpacity,
-    AsyncStorage
+    AsyncStorage,
+    StyleSheet
 } from 'react-native'
 import { connect } from 'react-redux'
 import { fecthData } from '../store/Actions/Api'
 import Icon from 'react-native-vector-icons/Entypo'
 import { Query, Mutation, graphql } from 'react-apollo';
 import { getGarbages } from '../graphQl'
+const deviceWidth = Dimensions.get('window').width;
+const deviceHeight = Dimensions.get('window').height;
+
 
 class Home extends Component {
     static navigationOptions = (props) => {
         return {
             headerTitle: 'Trashure',
+            headerStyle: { backgroundColor: '#2d3436' },
+            headerTitleStyle: { color: 'white' },
         }
     };
 
@@ -59,53 +64,31 @@ class Home extends Component {
                                                 data={data.garbages.reverse()}
                                                 keyExtractor={(item) => item._id}
                                                 renderItem={({ item }) =>
-                                                    <View
-                                                        style={{ flex: 1, width: deviceWidth * 0.95, borderBottomColor: 'black', marginTop: 20, minHeight: deviceHeight * 0.5, maxHeight: deviceHeight * 0.8 }}>
-                                                        <View>
-                                                            <Text
-                                                                style={{ fontWeight: 'bold', fontSize: 20 }}>{item.userID.name}</Text>
-                                                        </View>
-                                                        <View
-                                                            style={{ flexDirection: 'row' }}>
-                                                            <Text>{item.coordinate}</Text>
-                                                        </View>
+                                                    <View style={s.card}>
                                                         <Image
-                                                            style={{ flex: 1, minHeight: deviceHeight * 0.3, maxHeight: deviceHeight * 0.6, resizeMode: 'contain' }}
+                                                            style={s.image}
                                                             source={{ uri: item.path }} />
-                                                        <View
-                                                            style={{ marginTop: 10 }}>
-                                                            <Text>{item.description}</Text>
-                                                        </View>
-                                                        <View>
-                                                            <Text
-                                                                style={{ color: 'grey' }}>posted on {item.createdAt}</Text>
-                                                        </View>
+                                                        <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
+                                                            {item.userID.name}</Text>
+                                                        <Text>ini nanti alamat</Text>
+                                                        <Text>{item.description}</Text>
+                                                        <Text
+                                                            style={{ color: 'grey' }}>posted on {new Date(item.createdAt).toLocaleString()}</Text>
                                                     </View>
                                                 }>
                                             </FlatList>
                                         )
                                     }
-
                                 }}
-
-
                             </Query>
                         ) : (
                             <Text>Loading</Text>
                         )
                 }
-
-
-
             </View >
         )
     }
 }
-
-
-
-const deviceWidth = Dimensions.get('window').width;
-const deviceHeight = Dimensions.get('window').height;
 
 const mapStateToProps = (state) => ({
     loading: state.Api.loading
@@ -115,4 +98,17 @@ const mapDispatchToProps = (dispatch) => ({
     fetchData: () => dispatch(fetchData())
 })
 
+
+const s = StyleSheet.create({
+    card: {
+        width: deviceWidth * 0.95,
+        borderBottomColor: '#2980b9',
+        borderBottomWidth: 1,
+        marginBottom: 20
+    },
+    image: {
+        height: deviceHeight * 0.3,
+        resizeMode: 'contain'
+    }
+})
 export default Home
