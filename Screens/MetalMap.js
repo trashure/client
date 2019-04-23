@@ -14,26 +14,15 @@ import { Query } from 'react-apollo'
 import { getGarbages } from '../graphQl'
 import { ConvertCoordinate, ConvertToImage } from '../Helper'
 import { Modal } from 'react-native-paper';
-// import { Button } from 'react-native-paper';
-
-import { MapNavigation } from '../Component/MapNavigation'
+import MapNavigation from '../Component/MapNavigation';
 
 
-export default class Detail extends Component {
+export default class MetalMap extends Component {
     state = {
         modalVisible: false,
-        plastic: '',
-        metal: '',
-        paper: '',
-        glass: '',
-        cardboard: '',
-        trash: '',
-        findmetal: true,
-        findpaper: false,
-        findcardboard: false
-
+        data: '',
+        token: ''
     }
-
     componentDidMount = () => {
         this._retrieveData();
     }
@@ -51,24 +40,10 @@ export default class Detail extends Component {
         }
     }
 
-    getDetail(allData) {
-        this.setState({
-            paper: allData.filter(e => { return e.type == 'paper' }).length,
-            metal: allData.filter(e => { return e.type == 'metal' }).length,
-            plastic: allData.filter(e => { return e.type == 'plastic' }).length,
-            cardboard: allData.filter(e => { return e.type == 'cardboard' }).length,
-            glass: allData.filter(e => { return e.type == 'glass' }).length,
-            modalVisible: true
-
-        })
-
-    }
-
     render() {
         console.log('masuk render');
 
         return (
-
             <Query query={getGarbages} variables={{ token: this.state.token }}>{
                 ({ loading, error, data }) => {
                     if (loading) return loading
@@ -89,17 +64,18 @@ export default class Detail extends Component {
                                 }}
                             >
                                 {
-                                    data.garbages.map(e => (
+                                    data.garbages.filter(e => { return e.type == 'metal' }).map(e => (
                                         <Marker
                                             pinColor={e.color}
                                             coordinate={ConvertCoordinate(e.coordinate)}>
                                             <Callout
-                                                onPress={() => this.setState({ [`find${e.type}`]: true })}
+                                                onPress={() => this.setState({ findpaper: true, findmetal: false })}
                                             >
                                                 <Text>{e.type}</Text>
                                             </Callout>
-                                        </Marker>
-                                    ))
+
+                                        </Marker>))
+
                                 }
                             </MapView>
                             {/* <MapNavigation/> */}
@@ -131,35 +107,12 @@ export default class Detail extends Component {
                                     <Text>cardboard</Text>
                                 </TouchableOpacity>
                             </View>
-
-                            <Modal
-                                animationType="slide"
-                                transparent={false}
-                                visible={this.state.modalVisible}
-                                onRequestClose={() => {
-                                    Alert.alert('Modal has been closed.');
-                                }}>
-                                <View style={{ marginTop: 22, justifyContent: 'center', alignItems: 'center' }}>
-
-
-                                    <Text style={{ size: 30 }}> metal :  {this.state.metal}</Text>
-                                    <Text style={{ size: 30 }}> plastic :  {this.state.plastic}</Text>
-                                    <Text style={{ size: 30 }}> paper :  {this.state.paper}</Text>
-                                    <Text style={{ size: 30 }}> glass :  {this.state.glass}</Text>
-                                    <Text style={{ size: 30 }}> cardboard :  {this.state.cardboard}</Text>
-                                    <TouchableOpacity
-                                        style={{ backgroundColor: 'gold', padding: 5 }}
-                                        onPress={() => this.setState({ modalVisible: false })}>
-                                        <Text>close</Text>
-                                    </TouchableOpacity>
-
-                                </View>
-                            </Modal>
                         </>
                     )
-                }}
+                }
+            }
             </Query>
-
         )
+
     }
 }

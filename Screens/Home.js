@@ -48,7 +48,7 @@ class Home extends Component {
     render() {    // AsyncStorage.removeItem('Token', (error) => {
         //     console.log(error);
         // })
-        let { data } = this.state
+        // let { data } = this.state
         console.log(this.state.token);
         
         return (

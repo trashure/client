@@ -20,7 +20,13 @@ import TakePicture from '../Screens/TakePicture'
 import ExpoCameraScreen from '../Screens/ExpoCameraScreen'
 import Collection from '../Screens/Collection'
 import Detail from '../Screens/Detail';
-import IoT from '../Screens/IoT';
+import Iot from '../Screens/Iot';
+
+import PaperMap from '../Screens/papermap'
+import MetalMap from '../Screens/MetalMap'
+import GlassMap from '../Screens/GlassMap'
+import CardboardMap from '../Screens/CardboardMap'
+import { concat } from 'apollo-link';
 
 const LoginStackNav = createStackNavigator({
     LoginPage: {
@@ -61,6 +67,40 @@ const PictureNav = createStackNavigator({
     }
 })
 
+const mapStack = createStackNavigator({
+    Maps: {
+        screen: Detail,
+        navigationOptions: {
+            header: null
+        }
+    },
+    PaperMap: {
+        screen: PaperMap,
+        navigationOptions: {
+            header: null
+        }
+    },
+    MetalMap: {
+        screen: MetalMap,
+        navigationOptions: {
+            header: null
+        }
+    },
+    GlassMap: {
+        screen: GlassMap,
+        navigationOptions: {
+            header: null
+        }
+    },
+    Cardboard: {
+        screen: CardboardMap,
+        navigationOptions: {
+            header: null
+        }
+    }
+
+})
+
 const HomeRoute = createBottomTabNavigator({
 
     Home: {
@@ -86,14 +126,14 @@ const HomeRoute = createBottomTabNavigator({
         }
     },
     Maps: {
-        screen: Detail,
+        screen: mapStack,
         navigationOptions: {
             tabBarLabel: 'Maps',
             tabBarIcon: ({ tintColor }) => (<MaterialCommunityIcons name="map-marker-multiple" color={tintColor} size={24} />)
         }
     },
-    IoT: {
-        screen: IoT,
+    Iot: {
+        screen: Iot,
         navigationOptions: {
             tabBarLabel: 'IoT',
             tabBarIcon: ({ tintColor }) => (<MaterialIcons name="device-hub" color={tintColor} size={24} />)
