@@ -87,7 +87,7 @@ export default class RegisterForm extends Component {
                                     style={s.register}>
                                     <Text style={{ color: 'white' }}>Already have account ? </Text>
                                     <TouchableOpacity
-                                        onPress={() => this.props.navigation.navigate('FirstRender')} >
+                                        onPress={() => this.props.navigation.navigate('LoginPage')} >
                                         <Text style={{ color: 'skyblue' }}>login</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -143,6 +143,14 @@ const deviceHeight = Dimensions.get('window').height
 const deviceWidth = Dimensions.get('window').width
 
 const s = StyleSheet.create({
+    register: {
+        flex: 1,
+        flexDirection: 'row',
+        marginLeft: deviceWidth * 0.2,
+        marginRight: deviceWidth * 0.2,
+        maxHeight: deviceHeight * 0.06,
+        justifyContent: 'center',
+    },
     layout: {
         flex: 1,
         height: deviceHeight,

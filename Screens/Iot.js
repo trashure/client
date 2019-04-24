@@ -179,7 +179,7 @@ class Iot extends Component {
             );
         }
         else {
-            return null
+            return <View></View>
         }
     }
 }

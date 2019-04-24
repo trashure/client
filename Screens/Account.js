@@ -16,7 +16,7 @@ export default class Account extends Component {
                 <TouchableOpacity
                     onPress={() => this.logout()}
                     style={s.button}>
-                    <Text style={{ color: 'white' }}>Logout</Text>
+                    <Text style={{ color: 'gold' }}>Logout</Text>
                 </TouchableOpacity>
             </View>
         )
@@ -32,11 +32,8 @@ const s = StyleSheet.create({
         alignItems: 'center'
     },
     button: {
-        flex: 1,
-        maxHeight: deviceHeight * 0.06,
-        marginTop: 3,
-        marginLeft: deviceWidth * 0.3,
-        marginRight: deviceWidth * 0.3,
-        backgroundColor: 'blue'
+        padding: 10,
+        borderRadius:20,
+        backgroundColor: '#2d3436'
     }
 })

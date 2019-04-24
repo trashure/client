@@ -19,7 +19,7 @@ class Home extends Component {
         return {
             headerTitle: 'Trashure',
             headerStyle: { backgroundColor: '#2d3436' },
-            headerTitleStyle: { color: 'white' },
+            headerTitleStyle: { color: 'gold' },
         }
     };
 
@@ -37,10 +37,12 @@ class Home extends Component {
     _retrieveData = async () => {
         try {
             const value = await AsyncStorage.getItem('Token');
+            console.log(value);
             if (value !== null) {
                 this.setState({
                     token: value
                 })
+
             }
         } catch (error) {
             // Error retrieving data
@@ -52,7 +54,9 @@ class Home extends Component {
         if (!this.state.token) return (
             <View style={s.loading}>
                 <ActivityIndicator size="large" color='gold' />
+                <Text>fetch data ... </Text>
             </View>
+            
         )
         if (this.state.token) {
             return (
@@ -63,6 +67,7 @@ class Home extends Component {
                                 if (loading) return (
                                     <View style={s.loading}>
                                         <ActivityIndicator size="large" color='gold' />
+                                        <Text>fetch data ... </Text>
                                     </View>
                                 )
                                 if (error) return error;
