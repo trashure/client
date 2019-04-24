@@ -6,7 +6,8 @@ import {
     Button, Image,
     TouchableOpacity,
     ActivityIndicator,
-    AsyncStorage
+    AsyncStorage,
+    StyleSheet
 } from 'react-native'
 
 const { width, height } = Dimensions.get('window')
@@ -68,13 +69,23 @@ export default class PlasticMap extends Component {
     render() {
         console.log('masuk render');
         const { token } = this.state
-        if(!token) {return <ActivityIndicator/>}
+        if (!token) {
+            return (
+                <View style={s.loading}>
+                    <ActivityIndicator size="large" color='gold' />
+                </View>
+            )
+        }
         if (token) {
             return (
 
                 <Query query={getGarbages} variables={{ token: this.state.token }}>{
                     ({ loading, error, data }) => {
-                        if (loading) return <Text>loading</Text>
+                        if (loading) return (
+                            <View style={s.loading}>
+                                <ActivityIndicator size="large" color='gold' />
+                            </View>
+                        )
                         if (error) return <Text>fecthing data</Text>
                         if (data) return (
                             <>
@@ -109,36 +120,39 @@ export default class PlasticMap extends Component {
                                 <MapNavigation
                                     page={this.props.navigation} />
 
-                                {/* <View
-                    style={{ flex: 1, maxHeight: height * 0.05 }}>
-                    <Button
-                        title="see detail"
-                        onPress={()=> this.getDetail()} />
-                </View> */}
+                                <View
+                                    style={{ flex: 1, maxHeight: height * 0.05 }}>
+                                    <Button
+                                        title="see detail"
+                                        onPress={() => {
+                                            this.setState({ loading: true })
+                                            this.getDetail(data.garbages)
+                                        }} />
+                                </View>
 
-                                {/* <Modal
-                    animationType="slide"
-                    transparent={false}
-                    visible={this.state.modalVisible}
-                    onRequestClose={() => {
-                        Alert.alert('Modal has been closed.');
-                    }}>
-                    <View style={{ marginTop: 22, justifyContent: 'center', alignItems: 'center' }}>
+                                <Modal
+                                    animationType="slide"
+                                    transparent={false}
+                                    visible={this.state.modalVisible}
+                                    onRequestClose={() => {
+                                        Alert.alert('Modal has been closed.');
+                                    }}>
+                                    <View style={{ marginTop: 22, justifyContent: 'center', alignItems: 'center' }}>
 
 
-                        <Text > metal :  {this.state.metal}</Text>
-                        <Text> plastic :  {this.state.plastic}</Text>
-                        <Text > paper :  {this.state.paper}</Text>
-                        <Text> glass :  {this.state.glass}</Text>
-                        <Text> cardboard :  {this.state.cardboard}</Text>
-                        <TouchableOpacity
-                            style={{ backgroundColor: 'gold', padding: 5 }}
-                            onPress={() => this.setState({ modalVisible: false })}>
-                            <Text>close</Text>
-                        </TouchableOpacity>
+                                        <Text > metal :  {this.state.metal}</Text>
+                                        <Text> plastic :  {this.state.plastic}</Text>
+                                        <Text > paper :  {this.state.paper}</Text>
+                                        <Text> glass :  {this.state.glass}</Text>
+                                        <Text> cardboard :  {this.state.cardboard}</Text>
+                                        <TouchableOpacity
+                                            style={{ backgroundColor: 'gold', padding: 5 }}
+                                            onPress={() => this.setState({ modalVisible: false })}>
+                                            <Text>close</Text>
+                                        </TouchableOpacity>
 
-                    </View>
-                </Modal> */}
+                                    </View>
+                                </Modal>
                             </>
                         )
                     }}
@@ -148,3 +162,11 @@ export default class PlasticMap extends Component {
         }
     }
 }
+
+const s = StyleSheet.create({
+    loading: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    }
+})

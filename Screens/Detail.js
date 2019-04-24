@@ -6,7 +6,8 @@ import {
     Button, Image,
     TouchableOpacity,
     ActivityIndicator,
-    AsyncStorage
+    AsyncStorage,
+    StyleSheet
 } from 'react-native'
 
 const { width, height } = Dimensions.get('window')
@@ -16,6 +17,7 @@ import { getGarbages } from '../graphQl'
 import { ConvertCoordinate, ConvertToImage } from '../Helper'
 import { Modal } from 'react-native-paper';
 // import { Button } from 'react-native-paper';
+// import { GetDetail } from '../Component/GetDetail'
 
 import { MapNavigation } from '../Component/MapNavigation'
 
@@ -23,6 +25,7 @@ import { MapNavigation } from '../Component/MapNavigation'
 export default class Detail extends Component {
     state = {
         modalVisible: false,
+        loading: false,
         plastic: '',
         metal: '',
         paper: '',
@@ -59,21 +62,35 @@ export default class Detail extends Component {
             plastic: allData.filter(e => { return e.type == 'plastic' }).length,
             cardboard: allData.filter(e => { return e.type == 'cardboard' }).length,
             glass: allData.filter(e => { return e.type == 'glass' }).length,
-            modalVisible: true
-
+            modalVisible: true,
+            loading : false
         })
-
     }
 
     render() {
         console.log('masuk render');
-        const { token } = this.state
-        if (!token) { return <ActivityIndicator /> }
+        const { token, loading } = this.state
+        if (loading) {
+            return (
+                <View style={s.loading}>
+                    <ActivityIndicator size="large" color='gold' />
+                </View>)
+        }
+        if (!token) {
+            return (
+                <View style={s.loading}>
+                    <ActivityIndicator size="large" color='gold' />
+                </View>)
+        }
         if (token) {
             return (
                 <Query query={getGarbages} variables={{ token: this.state.token }}>{
                     ({ loading, error, data }) => {
-                        if (loading) return <Text>loading</Text>
+                        if (loading) return (
+                            <View style={s.loading}>
+                                <ActivityIndicator size="large" color='gold' />
+                            </View>
+                        )
                         if (error) return error
                         if (data) return (
                             <>
@@ -107,22 +124,28 @@ export default class Detail extends Component {
                                 </MapView>
                                 <MapNavigation
                                     page={this.props.navigation} />
+                                {/* <GetDetail
+                                    mainProps ={this}/> */}
 
                                 <View
                                     style={{ flex: 1, maxHeight: height * 0.05 }}>
                                     <Button
                                         title="see detail"
-                                        onPress={() => this.getDetail(data.garbages)} />
+                                        onPress={() => {
+                                            this.setState({loading: true})
+                                            this.getDetail(data.garbages)
+                                        }} />
                                 </View>
 
                                 <Modal
+                                    style={{}}
                                     animationType="slide"
-                                    transparent={false}
+                                    transparent={true}
                                     visible={this.state.modalVisible}
                                     onRequestClose={() => {
                                         Alert.alert('Modal has been closed.');
                                     }}>
-                                    <View style={{ marginTop: 22, justifyContent: 'center', alignItems: 'center' }}>
+                                    <View style={{ backgroundColor : 'white', marginTop: 22, justifyContent: 'center', alignItems: 'center' }}>
 
 
                                         <Text > metal :  {this.state.metal}</Text>
@@ -147,3 +170,13 @@ export default class Detail extends Component {
         }
     }
 }
+
+
+
+const s = StyleSheet.create({
+    loading: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    }
+})

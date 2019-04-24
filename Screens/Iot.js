@@ -91,12 +91,13 @@ class Iot extends Component {
                 { compress: 1, format: "jpeg", base64: true }
             )
             console.log(resizedPhoto)
+
+            
             iot({
                 variables: {
                     path: resizedPhoto.base64
                 }
             })
-=
             this.setState({
                 cameraLoading: false
             })
