@@ -1,18 +1,12 @@
 import React, { Component } from 'react'
 import {
-    AppRegistry,
-    Dimensions,
     StyleSheet,
     Text,
     TouchableOpacity,
     View
 } from 'react-native'
 
-import { Camera, Permissions } from 'expo'
-
 import { RNCamera } from 'react-native-camera';
-
-
 
 class TakePicture extends Component {
     render() {
@@ -82,7 +76,5 @@ const styles = StyleSheet.create({
       margin: 20,
     },
   });
-
-// AppRegistry.registerComponent('TakePicture', () => TakePicture);
 
 module.exports = TakePicture

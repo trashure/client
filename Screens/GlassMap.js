@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps'
 import {
     Dimensions, View,
-    Text, Picker,
-    Button, Image,
+    Text,
+    Button,
     TouchableOpacity,
     ActivityIndicator,
     AsyncStorage,
@@ -14,12 +14,9 @@ const { width, height } = Dimensions.get('window')
 
 import { Query } from 'react-apollo'
 import { getGarbages } from '../graphQl'
-import { ConvertCoordinate, ConvertToImage } from '../Helper'
+import { ConvertCoordinate } from '../Helper'
 import { Modal } from 'react-native-paper';
-// import { Button } from 'react-native-paper';
-
 import { MapNavigation } from '../Component/MapNavigation'
-
 
 export default class Detail extends Component {
     state = {
@@ -129,9 +126,9 @@ export default class Detail extends Component {
                                 </View>
 
                                 <Modal
-                                    style={{backgroundColor : '#ffff'}}
+                                    style={{ backgroundColor: '#ffff' }}
                                     animationType="slide"
-                                    
+
                                     visible={this.state.modalVisible}
                                     onRequestClose={() => {
                                         Alert.alert('Modal has been closed.');

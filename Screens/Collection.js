@@ -1,19 +1,19 @@
 import React, { Component } from 'react'
-import { 
-    View, 
-    Text, 
-    FlatList, 
-    Dimensions, 
-    Image, 
-    StyleSheet, 
-    TouchableOpacity, 
-    Modal, 
-    AsyncStorage, 
-    Alert, ScrollView,
-    ActivityIndicator } from 'react-native'
-import { AntDesign, Feather } from '@expo/vector-icons';
-import { Button } from 'react-native-paper';
-import { Query, Mutation, graphql } from 'react-apollo';
+import {
+    ActivityIndicator,
+    AsyncStorage,
+    Dimensions,
+    FlatList,
+    Image,
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native'
+import { Feather } from '@expo/vector-icons';
+import { Query, Mutation } from 'react-apollo';
 import { getGarbages, getCollections, deleteTrash } from '../graphQl'
 const { width, height } = Dimensions.get('window');
 
@@ -67,36 +67,38 @@ export default class Collection extends Component {
                                     if (loading) return (
                                         <View style={s.loading}>
                                             <ActivityIndicator size="large" color='gold' />
+                                            <Text style={{ color: 'gold' }}>Please wait ... </Text>
                                         </View>
                                     )
                                     if (error) return <View><Text>error</Text></View>;
                                     if (data) {
                                         return (
-                                          <ScrollView>
+                                            <ScrollView>
                                                 <View style={s.collection}>
-                                                {
-                                                    data.collections.map(e =>
-                                                        (
-                                                            <TouchableOpacity
-                                                                key={e._id}
-                                                                onPress={() => this.setState({ modalVisible: true, selectionItem: e })}                                        >
-                                                                <Image
-                                                                    style={{ width: width / 3 - 3, height: width / 3 - 3, margin: 1 }}
-                                                                    source={{ uri: e.path }}
-                                                                />
-                                                            </TouchableOpacity>
+                                                    {
+                                                        data.collections.map(e =>
+                                                            (
+                                                                <TouchableOpacity
+                                                                    key={e._id}
+                                                                    onPress={() => this.setState({ modalVisible: true, selectionItem: e })}                                        >
+                                                                    <Image
+                                                                        style={{ width: width / 3 - 3, height: width / 3 - 3, margin: 1 }}
+                                                                        source={{ uri: e.path }}
+                                                                    />
+                                                                </TouchableOpacity>
+                                                            )
                                                         )
-                                                    )
-                                                }
-                                            </View>
-                                          </ScrollView>
+                                                    }
+                                                </View>
+                                            </ScrollView>
                                         )
                                     }
                                 }}
                             </Query>
                         ) : (
-                            <View style={s.loading}>
+                            <View style={[s.loading, { flex: 1 }]}>
                                 <ActivityIndicator size="large" color='gold' />
+                                <Text style={{ color: 'gold' }}>Please wait ... </Text>
                             </View>
                         )
                 }
@@ -174,7 +176,7 @@ export default class Collection extends Component {
                         </FlatList>
                     </View>
                 </Modal>
-            </View>
+            </View >
         )
     }
 }

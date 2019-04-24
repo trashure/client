@@ -1,24 +1,22 @@
 import React, { Component } from 'react'
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps'
 import {
-    Dimensions, View,
-    Text, Picker,
-    Button, Image,
-    TouchableOpacity,
     ActivityIndicator,
     AsyncStorage,
-    StyleSheet
+    Button,
+    Dimensions,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native'
-
-const { width, height } = Dimensions.get('window')
 
 import { Query } from 'react-apollo'
 import { getGarbages } from '../graphQl'
-import { ConvertCoordinate, ConvertToImage } from '../Helper'
+import { ConvertCoordinate } from '../Helper'
 import { Modal } from 'react-native-paper';
-// import { Button } from 'react-native-paper';
-
 import { MapNavigation } from '../Component/MapNavigation'
+const { width, height } = Dimensions.get('window')
 
 
 export default class PaperMap extends Component {

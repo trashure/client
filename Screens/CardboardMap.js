@@ -2,23 +2,21 @@ import React, { Component } from 'react'
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps'
 import {
     Dimensions, View,
-    Text, Picker,
-    Button, Image,
+    Text,
+    Button,
     TouchableOpacity,
     ActivityIndicator,
     AsyncStorage,
     StyleSheet
 } from 'react-native'
 
-const { width, height } = Dimensions.get('window')
 
 import { Query } from 'react-apollo'
-import { getGarbages } from '../graphQl'
-import { ConvertCoordinate, ConvertToImage } from '../Helper'
 import { Modal } from 'react-native-paper';
-// import { Button } from 'react-native-paper';
-
+import { getGarbages } from '../graphQl'
+import { ConvertCoordinate } from '../Helper'
 import { MapNavigation } from '../Component/MapNavigation'
+const { width, height } = Dimensions.get('window')
 
 
 export default class Detail extends Component {
@@ -61,9 +59,7 @@ export default class Detail extends Component {
             cardboard: allData.filter(e => { return e.type == 'cardboard' }).length,
             glass: allData.filter(e => { return e.type == 'glass' }).length,
             modalVisible: true
-
         })
-
     }
 
     render() {

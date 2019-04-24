@@ -17,19 +17,17 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import Login from '../Screens/Login'
 import RegisterForm from '../Screens/RegisterForm'
 import Home from '../Screens/Home'
-import TakePicture from '../Screens/TakePicture'
 import ExpoCameraScreen from '../Screens/ExpoCameraScreen'
 import Collection from '../Screens/Collection'
 import Detail from '../Screens/Detail';
 import Iot from '../Screens/Iot';
 import Account from '../Screens/Account';
-
 import PaperMap from '../Screens/papermap'
 import MetalMap from '../Screens/MetalMap'
 import GlassMap from '../Screens/GlassMap'
 import CardboardMap from '../Screens/CardboardMap'
 import PlasticMap from '../Screens/PlasticMap'
-import { concat } from 'apollo-link';
+
 
 const LoginStackNav = createStackNavigator({
     LoginPage: {
@@ -162,7 +160,7 @@ const HomeRoute = createBottomTabNavigator({
         }
     }
 }, {
-        initialRouteName: 'Home',
+        initialRouteName: 'Maps',
         tabBarOptions: {
             activeTintColor: 'gold',
             inactiveTintColor: 'white',
