@@ -68,7 +68,7 @@ export default class PlasticMap extends Component {
     render() {
         console.log('masuk render');
         const { token } = this.state
-        if(token.length) {return <ActivityIndicator/>}
+        if(!token) {return <ActivityIndicator/>}
         if (token) {
             return (
 
