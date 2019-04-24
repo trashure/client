@@ -116,7 +116,7 @@ class ExpoCameraScreen extends Component {
     render() {
         const { hasCameraPermission, imageUri, loading, title, description, focusedScreen } = this.state;
         if (loading) return (
-            <View style={s.loading}>
+            <View style={[s.loading, { flex: 1 }]}>
                 <ActivityIndicator size="large" color='gold' />
                 <Text style={{ color: 'gold' }}>In Progress ...</Text>
             </View>)
@@ -127,7 +127,7 @@ class ExpoCameraScreen extends Component {
                         <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
                             <View style={s.layout}>
                                 <Image
-                                    style={{ height: 300, width: 300, marginTop: 20 }}
+                                    style={{ minHeight: deviceWidth / 2, minWidth: deviceWidth / 2, maxHeight: 300, maxWidth: 300, marginTop: 20 }}
                                     source={{ uri: imageUri }} />
                                 <View style={s.input}>
                                     <MaterialIcons
@@ -291,7 +291,7 @@ class ExpoCameraScreen extends Component {
         }
         else {
             return (
-                <View style={s.loading}>
+                <View style={[s.loading, { flex: 1 }]}>
                     <ActivityIndicator size="large" color='gold' />
                 </View>
             )

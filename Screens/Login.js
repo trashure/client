@@ -22,28 +22,26 @@ import { login } from '../graphQl/index'
 
 
 export default class Login extends Component {
-
     state = {
+        loading: '',
         email: '',
         password: ''
     }
 
     componentDidMount = () => {
         this._retrieveData();
-        // AsyncStorage.removeItem('Token', (error) => {
-        //     console.log(error);
-        // })
-        // this._storeData()
     }
 
     _storeData = async (token) => {
         try {
             await AsyncStorage.setItem('Token', token);
+            this.setState({ loading: false })
+            this.props.navigation.navigate('ContentPage')
         } catch (error) {
             console.log(error);
         }
     }
-    
+
     _retrieveData = async () => {
         try {
             const value = await AsyncStorage.getItem('Token');
@@ -57,10 +55,14 @@ export default class Login extends Component {
 
     render() {
         return (
-            this.props.loading ?
+            this.state.loading ?
                 (
-                    <View style={{ alignItems: 'center' }}><ActivityIndicator size="large" color="#0000ff" /></View>
+                    <View style={s.loading}>
+                        <ActivityIndicator size="large" color="gold" />
+                        <Text>please wait ... </Text>
+                    </View>
                 ) : (
+
                     <Mutation mutation={login}>
                         {(login, { data }) => (
                             <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
@@ -100,8 +102,7 @@ export default class Login extends Component {
                                                         }
                                                     })
                                                         .then(({ data }) => {
-                                                            this.props.navigation.navigate('ContentPage')
-                                                            console.log(data.login.token);
+                                                            this.setState({ loading: true })
                                                             this._storeData(data.login.token)
                                                         })
                                                         .catch(err => {
@@ -135,6 +136,11 @@ export default class Login extends Component {
 const deviceHeight = Dimensions.get('window').height
 const deviceWidth = Dimensions.get('window').width
 const s = StyleSheet.create({
+    loading: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     register: {
         flex: 1,
         flexDirection: 'row',

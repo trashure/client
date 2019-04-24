@@ -1,14 +1,33 @@
 import React, { Component } from 'react'
-import { View, Text, FlatList, Dimensions, Image, StyleSheet, TouchableOpacity, Modal, AsyncStorage, Alert } from 'react-native'
-import { AntDesign } from '@expo/vector-icons';
+import { 
+    View, 
+    Text, 
+    FlatList, 
+    Dimensions, 
+    Image, 
+    StyleSheet, 
+    TouchableOpacity, 
+    Modal, 
+    AsyncStorage, 
+    Alert, ScrollView,
+    ActivityIndicator } from 'react-native'
+import { AntDesign, Feather } from '@expo/vector-icons';
 import { Button } from 'react-native-paper';
 import { Query, Mutation, graphql } from 'react-apollo';
-import { getCollections } from '../graphQl'
+import { getGarbages, getCollections, deleteTrash } from '../graphQl'
 const { width, height } = Dimensions.get('window');
 
 
 
 export default class Collection extends Component {
+    static navigationOptions = (props) => {
+        return {
+            headerTitle: 'Collections',
+            headerStyle: { backgroundColor: '#2d3436' },
+            headerTitleStyle: { color: 'gold' },
+        }
+    };
+
     state = {
         token: '',
         modalVisible: false,
@@ -31,7 +50,7 @@ export default class Collection extends Component {
                 })
             }
             console.log(this.state.token);
-            
+
         } catch (error) {
             // Error retrieving data
         }
@@ -45,11 +64,16 @@ export default class Collection extends Component {
                         (
                             <Query query={getCollections} variables={{ token: this.state.token }}>
                                 {({ loading, error, data }) => {
-                                    if (loading) return <View><Text>loading</Text></View>;
+                                    if (loading) return (
+                                        <View style={s.loading}>
+                                            <ActivityIndicator size="large" color='gold' />
+                                        </View>
+                                    )
                                     if (error) return <View><Text>error</Text></View>;
                                     if (data) {
                                         return (
-                                            <View style={s.collection}>
+                                          <ScrollView>
+                                                <View style={s.collection}>
                                                 {
                                                     data.collections.map(e =>
                                                         (
@@ -65,12 +89,15 @@ export default class Collection extends Component {
                                                     )
                                                 }
                                             </View>
+                                          </ScrollView>
                                         )
                                     }
                                 }}
                             </Query>
                         ) : (
-                            <Text>Login Duls</Text>
+                            <View style={s.loading}>
+                                <ActivityIndicator size="large" color='gold' />
+                            </View>
                         )
                 }
 
@@ -102,7 +129,7 @@ export default class Collection extends Component {
 
                                     <Text style={{ marginTop: 10 }}>Description:</Text>
                                     <Text>{item.description}</Text>
-                                    <View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <TouchableOpacity
                                             style={{
                                                 backgroundColor: 'gold',
@@ -113,8 +140,34 @@ export default class Collection extends Component {
                                                 alignItems: 'center'
                                             }}
                                             onPress={() => this.setState({ modalVisible: false })}>
-                                            <Text style={{ size: 30 }}>Okey</Text>
+                                            <Text style={{ fontSize: 24 }}>Okey</Text>
                                         </TouchableOpacity>
+                                        <Mutation mutation={deleteTrash} refetchQueries={[{ query: getGarbages, variables: { token: this.state.token } }, { query: getCollections, variables: { token: this.state.token } }]}>
+                                            {(deleteTrash, { data }) => (
+                                                <Feather
+                                                    name="trash"
+                                                    size={20}
+                                                    color='crimson'
+                                                    style={{ marginLeft: 20, marginTop: 10, padding: 5 }}
+                                                    onPress={() => {
+                                                        deleteTrash({
+                                                            variables: {
+                                                                trashID: item._id,
+                                                                token: this.state.token
+                                                            }
+                                                        })
+                                                            .then(res => {
+                                                                console.log(res);
+                                                                this.setState({ modalVisible: false })
+                                                            })
+                                                            .catch(err => {
+                                                                console.log(err);
+                                                                return (<Text>{err}</Text>)
+                                                            });
+                                                    }}
+                                                />
+                                            )}
+                                        </Mutation>
                                     </View>
                                 </View>
                             }>
@@ -127,6 +180,11 @@ export default class Collection extends Component {
 }
 
 const s = StyleSheet.create({
+    loading: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     collection: {
         flexDirection: 'row',
         flexWrap: 'wrap'

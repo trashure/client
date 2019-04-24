@@ -98,3 +98,13 @@ query collections($token: String!){
         }
     }
     `;
+
+
+// DELETE
+export const deleteTrash = gql`
+   mutation deleteTrash($trashID: ID!, $token: String!){
+       deleteTrash(trashID:$trashID, token:$token){
+           _id
+       }
+   }
+`;
