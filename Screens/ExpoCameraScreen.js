@@ -17,28 +17,43 @@ import { Mutation } from 'react-apollo'
 import { createTrash, getGarbages, getCollections } from '../graphQl/index.js'
 import { TextInput } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
+import { ImageManipulator } from 'expo';
+import { NavigationEvents } from 'react-navigation';
 
 
+const initialState = {
+    loading: false,
+    path: '',
+    coordinate: {},
+    imageUri: '',
+    focusedScreen: true,
+    hasLocationPermission: null,
+    hasCameraPermission: null,
+    type: Camera.Constants.Type.back,
+    flash: Camera.Constants.FlashMode.torch
+}
 
 class ExpoCameraScreen extends Component {
-    state = {
-        loading: false,
-        path: '',
-        coordinate: {},
-        token: '',
-        imageUri: '',
-        hasLocationPermission: null,
-        hasCameraPermission: null,
-        type: Camera.Constants.Type.back,
-        flash: Camera.Constants.FlashMode.torch
+    state = { ...initialState, token: '' };
 
-    }
     async componentDidMount() {
         const { status } = await Permissions.askAsync(Permissions.CAMERA);
         this.setState({ hasCameraPermission: status === 'granted' })
         this._retrieveData()
 
+        const { navigation } = this.props;
+        navigation.addListener('willFocus', () =>
+            // console.log('focused')
+
+            this.setState({ focusedScreen: true })
+        );
+        navigation.addListener('willBlur', () =>
+            // console.log('un focused')
+
+            this.setState({ focusedScreen: false })
+        );
     }
+
 
     async componentWillMount() {
         const { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -53,6 +68,8 @@ class ExpoCameraScreen extends Component {
                     token: value
                 })
             }
+            console.log(value);
+
         } catch (error) {
             // Error retrieving data
         }
@@ -65,7 +82,7 @@ class ExpoCameraScreen extends Component {
         if (this.camera) {
             console.log('Taking photo');
             const options = {
-                quality: 0.05, base64: true, fixOrientation: true,
+                quality: 0.5, base64: true, fixOrientation: true,
                 exif: true
             };
             let photo = await this.camera.takePictureAsync(options).then(photo => {
@@ -76,40 +93,26 @@ class ExpoCameraScreen extends Component {
             //     loading: true
             // })
 
-
+            let resizedPhoto = await ImageManipulator.manipulateAsync(
+                photo.uri,
+                [{ resize: { width: 200, height: 200 } }],
+                { compress: 1, format: "jpeg", base64: true }
+            )
 
             let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest })
-            let objLocation = {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude
-            }
 
             this.setState({
                 imageUri: photo.uri,
-                coordinate: objLocation,
-                path: photo.base64,
+                coordinate: `${location.coords.latitude}:${location.coords.longitude}`,
+                path: resizedPhoto.base64,
                 loading: false
 
             })
-
-            console.log('--------');
-            console.log(location);
-            console.log('--------');
-
-
-
-
-            //     },
-            //     (error) => {
-            //         console.log(error.code, error.message);
-            //     },
-            //     { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-            // )
         }
     }
 
     render() {
-        const { hasCameraPermission, imageUri, loading, title, description } = this.state;
+        const { hasCameraPermission, imageUri, loading, title, description, focusedScreen } = this.state;
         if (loading) return (<View>
             <ActivityIndicator
                 size="large"
@@ -118,7 +121,7 @@ class ExpoCameraScreen extends Component {
         </View>)
         if (imageUri.length > 0)
             return (
-                <Mutation mutation={createTrash} refetchQueries={[{ query: getCollections }]}>
+                <Mutation mutation={createTrash} refetchQueries={[{ query: getGarbages }, { query: getCollections }]}>
                     {(createTrash, { data }) => (
                         <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
                             <View style={s.layout}>
@@ -153,18 +156,20 @@ class ExpoCameraScreen extends Component {
                                             this.setState({
                                                 loading: true
                                             })
-                                            const { token, path, coordinate, title, description } = this.state
+                                            const { token, path, coordinate, title, description } = this.state;
+                                            console.log(token, path, coordinate, title, description)
                                             createTrash({
                                                 variables: {
                                                     token,
                                                     path,
-                                                    coordinate: JSON.stringify(coordinate),
+                                                    coordinate,
                                                     title,
                                                     createdAt: new Date().toISOString(),
                                                     description
                                                 }
                                             })
                                                 .then(data => {
+                                                    this.setState({ imageUri: '', loading:false })
                                                     this.props.navigation.navigate('Home')
                                                 })
                                                 .catch(err => {
@@ -181,14 +186,13 @@ class ExpoCameraScreen extends Component {
                 </Mutation>)
 
 
+
         if (hasCameraPermission === null) {
-            return <View />;
+            return <View />
         } else if (hasCameraPermission === false) {
             return <Text>No access to camera</Text>;
-        } else {
+        } else if (focusedScreen) {
             return (
-
-
                 <View style={{ flex: 1 }}>
                     <Camera
                         style={{ flex: 1 }}
@@ -255,6 +259,9 @@ class ExpoCameraScreen extends Component {
 
                 </View>
             );
+        }
+        else {
+            return <Text>Masuk else</Text>
         }
     }
 }

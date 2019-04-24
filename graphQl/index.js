@@ -13,15 +13,18 @@ mutation Login (
 }`
 
 export const register = gql` 
-mutation {
+mutation Register (
+    $name: String!,
+    $email : String!, 
+    $password : String!) {
     register(
-        name:"batman", 
-        email: "batman@gmail.com", 
-        password:"1234567ASDq@!") 
-    {
-        name
-        email
-    }
+        name: $name,
+        email: $email, 
+        password: $password)
+        {
+            _id
+            email
+        }
 }`
 
 export const IOT = gql`

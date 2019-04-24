@@ -7,6 +7,7 @@ import {
     createBottomTabNavigator
 } from 'react-navigation'
 
+import { AsyncStorage } from 'react-native'
 // I C O N
 import Icon from "react-native-vector-icons/FontAwesome"
 import MaterialIcon from "react-native-vector-icons/MaterialIcons"
@@ -21,6 +22,7 @@ import ExpoCameraScreen from '../Screens/ExpoCameraScreen'
 import Collection from '../Screens/Collection'
 import Detail from '../Screens/Detail';
 import Iot from '../Screens/Iot';
+import Account from '../Screens/Account';
 
 const LoginStackNav = createStackNavigator({
     LoginPage: {
@@ -98,9 +100,20 @@ const HomeRoute = createBottomTabNavigator({
             tabBarLabel: 'IoT',
             tabBarIcon: ({ tintColor }) => (<MaterialIcons name="device-hub" color={tintColor} size={24} />)
         }
+    },
+    Account: {
+        screen: Account,
+        navigationOptions: {
+            tabBarLabel: '',
+            tabBarIcon: ({ tintColor }) => (
+                <MaterialIcons
+                    name="account-circle"
+                    color={tintColor}
+                    size={24} />)
+        }
     }
 }, {
-        initialRouteName: 'Iot',
+        initialRouteName: 'Camera',
         tabBarOptions: {
             activeTintColor: 'gold',
             inactiveTintColor: 'white',
