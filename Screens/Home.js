@@ -3,7 +3,7 @@ import {
     View, Text, Image,
     FlatList, Dimensions,
     AsyncStorage,
-    StyleSheet, ScrollView
+    StyleSheet, ScrollView, ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
 import { fecthData } from '../store/Actions/Api'
@@ -31,7 +31,7 @@ class Home extends Component {
     componentDidMount = () => {
         this._retrieveData();
         console.log('Home Screen');
-        
+
     }
 
     _retrieveData = async () => {
@@ -47,53 +47,61 @@ class Home extends Component {
         }
     }
 
-    render() {    // AsyncStorage.removeItem('Token', (error) => {
-        //     console.log(error);
-        // })
-        // let { data } = this.state
-        console.log(this.state.token);
-        
-        return (
+    render() {
 
-            <View
-                style={{ flex: 1, alignItems: 'center' }}>
-                {
-                    this.state.token ?
-                        (
-                            <Query query={getGarbages} variables={{ token: this.state.token }}>
-                                {({ loading, error, data }) => {
-                                    if (loading) return loading;
-                                    if (error) return error;
-                                    
-                                    if (data) {
-                                        return (
-                                            <FlatList
-                                                data={data.garbages.reverse()}
-                                                keyExtractor={(item) => item._id}
-                                                renderItem={({ item }) =>
-                                                    <View style={s.card}>
-                                                        <Image
-                                                            style={s.image}
-                                                            source={{ uri: item.path }} />
-                                                        <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
-                                                            {item.userID.name}</Text>
-                                                        <Text>ini nanti alamat</Text>
-                                                        <Text>{item.description}</Text>
-                                                        <Text
-                                                            style={{ color: 'grey' }}>posted on {new Date(item.createdAt).toLocaleString()}</Text>
-                                                    </View>
-                                                }>
-                                            </FlatList>
-                                        )
-                                    }
-                                }}
-                            </Query>
-                        ) : (
-                            <Text>Loading</Text>
-                        )
-                }
-            </View >
+        if (!this.state.token) return (
+            <View style={s.loading}>
+                <ActivityIndicator size="large" color='gold' />
+            </View>
         )
+        if (this.state.token) {
+            return (
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                    {
+                        <Query query={getGarbages} variables={{ token: this.state.token }}>
+                            {({ loading, error, data }) => {
+                                if (loading) return (
+                                    <View style={s.loading}>
+                                        <ActivityIndicator size="large" color='gold' />
+                                    </View>
+                                )
+                                if (error) return error;
+
+                                if (data) {
+                                    return (
+                                        <FlatList
+                                            data={data.garbages.reverse()}
+                                            keyExtractor={(item) => item._id}
+                                            renderItem={({ item }) =>
+                                                <View style={s.card}>
+                                                    <Image
+                                                        style={s.image}
+                                                        source={{ uri: item.path }} />
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Text
+                                                            style={{ fontWeight: 'bold', fontSize: 20 }}>
+                                                            {item.title} - </Text>
+                                                        <Text>{item.type}</Text>
+                                                    </View>
+                                                    <Text>Taken by {item.userID.name}</Text>
+                                                    <Text>{item.address}</Text>
+                                                    <Text>{item.description}</Text>
+                                                    <Text
+                                                        style={{ color: 'grey' }}>posted on {new Date(item.createdAt).toLocaleString()}</Text>
+                                                </View>
+                                            }>
+                                        </FlatList>
+                                    )
+                                }
+                            }}
+                        </Query>
+
+                    }
+                </View >
+            )
+        }
+
+
     }
 }
 
@@ -107,6 +115,11 @@ const mapDispatchToProps = (dispatch) => ({
 
 
 const s = StyleSheet.create({
+    loading: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     card: {
         width: deviceWidth * 0.95,
         borderBottomColor: '#2980b9',

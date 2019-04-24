@@ -162,7 +162,9 @@ const HomeRoute = createBottomTabNavigator({
         }
     }
 }, {
-        initialRouteName: 'Maps',
+
+        initialRouteName: 'Home',
+      development
         tabBarOptions: {
             activeTintColor: 'gold',
             inactiveTintColor: 'white',

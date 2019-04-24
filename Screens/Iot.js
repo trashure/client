@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Camera, Permissions, Location, } from 'expo';
 import {
     View, Text, TouchableOpacity,
-    Dimensions, Alert, AsyncStorage, Image, Button, ActivityIndicator
+    Dimensions, Alert, AsyncStorage, Image, Button, ActivityIndicator, StyleSheet
 } from 'react-native'
 
 import Icon from "react-native-vector-icons/FontAwesome"
@@ -71,6 +71,10 @@ class Iot extends Component {
 
         if (this.camera) {
             console.log('Taking photo');
+            this.setState({
+                cameraLoading: true
+            })
+
             const options = {
                 quality: 0.5, base64: true, fixOrientation: true,
                 exif: true
@@ -92,10 +96,11 @@ class Iot extends Component {
                     path: resizedPhoto.base64
                 }
             })
-            .then(data => {
-                console.log('successfully ', data);
-                
+=
+            this.setState({
+                cameraLoading: false
             })
+
         }
     }
 
@@ -120,25 +125,51 @@ class Iot extends Component {
                             style={{ flex: 1 }}
                             type={this.state.type}
                             ref={(ref) => { this.camera = ref }}>
+
                             <View
                                 style={{
                                     flex: 1,
                                     backgroundColor: 'transparent',
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between'
-
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
                                 }}>
-
-                                <TouchableOpacity
-                                    onPress={this.snapPhoto.bind(this, iot)}
-                                    style={{
-                                        alignSelf: 'flex-end',
-                                        alignItems: 'flex-start',
-                                    }}>
-                                    <Icon name="camera" color='white' size={24} />
-                                </TouchableOpacity>
-
+                                {
+                                    this.state.cameraLoading ?
+                                        (
+                                            <View style={s.cameraLoading}>
+                                                <ActivityIndicator size="large" color='gold' />
+                                                <Text style={{ color: 'gold' }}>In Progress ...</Text>
+                                            </View>
+                                        ) : (
+                                            <View></View>
+                                        )
+                                }
                             </View>
+
+                            {this.state.cameraLoading ?
+                                (
+                                    <View
+                                        style={{
+                                            backgroundColor: 'transparent'
+                                        }}></View>
+                                ) : (
+
+                                    <View
+                                        style={{
+                                            flex: 1,
+                                            backgroundColor: 'transparent',
+                                            flexDirection: 'row',
+                                            justifyContent: 'center',
+                                            alignItems: 'flex-end'
+                                        }}>
+
+                                        <TouchableOpacity
+                                            onPress={this.snapPhoto.bind(this, iot)}
+                                            style={{ backgroundColor: 'gold', padding: 7, borderRadius: 20, marginBottom: 15 }}>
+                                            <Icon name="camera" color='#2d3436' size={24} />
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
                         </Camera>
 
                     </View>
@@ -147,7 +178,7 @@ class Iot extends Component {
             );
         }
         else {
-            return <Text>Masuk else</Text>
+            return null
         }
     }
 }
@@ -166,5 +197,14 @@ const mapDispatchToProps = (dispatch) => ({
     sendRawData: (object) => dispatch(sendRawData(object))
 })
 
+const s = StyleSheet.create({
+    cameraLoading: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#2d3436',
+        padding: 15,
+        borderRadius: 20
+    },
+})
 
 export default Iot
