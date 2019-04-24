@@ -47,7 +47,6 @@ export function fecthData() {
 
 export function sendRawData(object) {
     console.log(JSON.stringify(object.base64), "===masuk");
-
     return dispatch => {
         try {
             axios

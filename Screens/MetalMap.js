@@ -5,6 +5,7 @@ import {
     Text, Picker,
     Button, Image,
     TouchableOpacity,
+    ActivityIndicator,
     AsyncStorage
 } from 'react-native'
 
@@ -14,15 +15,27 @@ import { Query } from 'react-apollo'
 import { getGarbages } from '../graphQl'
 import { ConvertCoordinate, ConvertToImage } from '../Helper'
 import { Modal } from 'react-native-paper';
-import MapNavigation from '../Component/MapNavigation';
+// import { Button } from 'react-native-paper';
+
+import { MapNavigation } from '../Component/MapNavigation'
 
 
-export default class MetalMap extends Component {
+export default class Detail extends Component {
     state = {
         modalVisible: false,
-        data: '',
+        plastic: '',
+        metal: '',
+        paper: '',
+        glass: '',
+        cardboard: '',
+        trash: '',
+        findmetal: true,
+        findpaper: false,
+        findcardboard: false,
         token: ''
+
     }
+
     componentDidMount = () => {
         this._retrieveData();
     }
@@ -40,79 +53,98 @@ export default class MetalMap extends Component {
         }
     }
 
+    getDetail(allData) {
+        this.setState({
+            paper: allData.filter(e => { return e.type == 'paper' }).length,
+            metal: allData.filter(e => { return e.type == 'metal' }).length,
+            plastic: allData.filter(e => { return e.type == 'plastic' }).length,
+            cardboard: allData.filter(e => { return e.type == 'cardboard' }).length,
+            glass: allData.filter(e => { return e.type == 'glass' }).length,
+            modalVisible: true
+
+        })
+
+    }
+
     render() {
         console.log('masuk render');
-
-        return (
-            <Query query={getGarbages} variables={{ token: this.state.token }}>{
-                ({ loading, error, data }) => {
-                    if (loading) return loading
-                    if (error) return error
-                    if (data) return (
-                        <>
-                            <MapView
-                                style={{ flex: 1, maxHeight: height * 0.9, width: width * 1 }}
-                                provider={PROVIDER_GOOGLE}
-                                zoomEnabled={true}
-                                scrollEnabled={true}
-                                showsScale={true}
-                                region={{
-                                    latitudeDelta: 0.1,
-                                    longitudeDelta: 0.1,
-                                    latitude: -6.259831,
-                                    longitude: 106.782795,
-                                }}
-                            >
-                                {
-                                    data.garbages.filter(e => { return e.type == 'metal' }).map(e => (
-                                        <Marker
-                                            pinColor={e.color}
-                                            coordinate={ConvertCoordinate(e.coordinate)}>
-                                            <Callout
-                                                onPress={() => this.setState({ findpaper: true, findmetal: false })}
-                                            >
-                                                <Text>{e.type}</Text>
-                                            </Callout>
-
-                                        </Marker>))
-
-                                }
-                            </MapView>
-                            {/* <MapNavigation/> */}
-                            <View>
-                                <TouchableOpacity
-                                    style={{ width: width / 5 }}
-                                    onPress={() => this.props.navigation.navigate('Maps')}
-                                ><Text>all</Text></TouchableOpacity>
-                                <TouchableOpacity
-                                    style={{ width: width / 5 }}
-                                    onPress={() => this.props.navigation.navigate('MetalMap')}
-                                ><Text>metal</Text></TouchableOpacity>
-                                <TouchableOpacity
-                                    style={{ width: width / 5 }}
-                                    onPress={() => this.props.navigation.navigate('PaperMap')}
+        const { token } = this.state
+        if (!token) { return <ActivityIndicator /> }
+        if (token) {
+            return (
+                <Query query={getGarbages} variables={{ token: this.state.token }}>{
+                    ({ loading, error, data }) => {
+                        if (loading) return <Text>loading</Text>
+                        if (error) return error
+                        if (data) return (
+                            <>
+                                <MapView
+                                    style={{ flex: 1, maxHeight: height * 0.9, width: width * 1 }}
+                                    provider={PROVIDER_GOOGLE}
+                                    zoomEnabled={true}
+                                    scrollEnabled={true}
+                                    showsScale={true}
+                                    region={{
+                                        latitudeDelta: 0.1,
+                                        longitudeDelta: 0.1,
+                                        latitude: -6.259831,
+                                        longitude: 106.782795,
+                                    }}
                                 >
-                                    <Text>paper</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={{ width: width / 5 }}
-                                    onPress={() => this.props.navigation.navigate('PlasticMap')}
-                                >
-                                    <Text>plastic</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={{ width: width / 5 }}
-                                    onPress={() => this.props.navigation.navigate('CardboardMap')}
-                                >
-                                    <Text>cardboard</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </>
-                    )
-                }
-            }
-            </Query>
-        )
+                                    {
+                                        data.garbages.filter(e => { return e.type == 'metal' }).map(e => (
+                                            <Marker
+                                                key={e._id}
+                                                pinColor={e.color}
+                                                coordinate={ConvertCoordinate(e.coordinate)}>
+                                                <Callout
+                                                    onPress={() => this.setState({ [`find${e.type}`]: true })}
+                                                >
+                                                    <Text>{e.type}</Text>
+                                                </Callout>
+                                            </Marker>
+                                        ))
+                                    }
+                                </MapView>
+                                <MapNavigation
+                                    page={this.props.navigation} />
 
+                                {/* <View
+                    style={{ flex: 1, maxHeight: height * 0.05 }}>
+                    <Button
+                        title="see detail"
+                        onPress={()=> this.getDetail()} />
+                </View> */}
+
+                                {/* <Modal
+                    animationType="slide"
+                    transparent={false}
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => {
+                        Alert.alert('Modal has been closed.');
+                    }}>
+                    <View style={{ marginTop: 22, justifyContent: 'center', alignItems: 'center' }}>
+
+
+                        <Text > metal :  {this.state.metal}</Text>
+                        <Text> plastic :  {this.state.plastic}</Text>
+                        <Text > paper :  {this.state.paper}</Text>
+                        <Text> glass :  {this.state.glass}</Text>
+                        <Text> cardboard :  {this.state.cardboard}</Text>
+                        <TouchableOpacity
+                            style={{ backgroundColor: 'gold', padding: 5 }}
+                            onPress={() => this.setState({ modalVisible: false })}>
+                            <Text>close</Text>
+                        </TouchableOpacity>
+
+                    </View>
+                </Modal> */}
+                            </>
+                        )
+                    }}
+                </Query>
+
+            )
+        }
     }
 }

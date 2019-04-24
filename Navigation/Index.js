@@ -7,6 +7,7 @@ import {
     createBottomTabNavigator
 } from 'react-navigation'
 
+import { AsyncStorage } from 'react-native'
 // I C O N
 import Icon from "react-native-vector-icons/FontAwesome"
 import MaterialIcon from "react-native-vector-icons/MaterialIcons"
@@ -21,11 +22,13 @@ import ExpoCameraScreen from '../Screens/ExpoCameraScreen'
 import Collection from '../Screens/Collection'
 import Detail from '../Screens/Detail';
 import Iot from '../Screens/Iot';
+import Account from '../Screens/Account';
 
 import PaperMap from '../Screens/papermap'
 import MetalMap from '../Screens/MetalMap'
 import GlassMap from '../Screens/GlassMap'
 import CardboardMap from '../Screens/CardboardMap'
+import PlasticMap from '../Screens/PlasticMap'
 import { concat } from 'apollo-link';
 
 const LoginStackNav = createStackNavigator({
@@ -92,13 +95,21 @@ const mapStack = createStackNavigator({
             header: null
         }
     },
-    Cardboard: {
+    CardboardMap: {
         screen: CardboardMap,
+        navigationOptions: {
+            header: null
+        }
+    },
+    PlasticMap: {
+        screen: PlasticMap,
         navigationOptions: {
             header: null
         }
     }
 
+}, {
+    initialRouteName: 'Maps',
 })
 
 const HomeRoute = createBottomTabNavigator({
@@ -137,6 +148,17 @@ const HomeRoute = createBottomTabNavigator({
         navigationOptions: {
             tabBarLabel: 'IoT',
             tabBarIcon: ({ tintColor }) => (<MaterialIcons name="device-hub" color={tintColor} size={24} />)
+        }
+    },
+    Account: {
+        screen: Account,
+        navigationOptions: {
+            tabBarLabel: '',
+            tabBarIcon: ({ tintColor }) => (
+                <MaterialIcons
+                    name="account-circle"
+                    color={tintColor}
+                    size={24} />)
         }
     }
 }, {
