@@ -1,5 +1,11 @@
 import React, { Component } from 'react'
-import { Text, View, TouchableOpacity, AsyncStorage, StyleSheet, Dimensions } from 'react-native'
+import { 
+    AsyncStorage, 
+    StyleSheet, 
+    Text, 
+    TouchableOpacity, 
+    View, 
+} from 'react-native'
 
 
 export default class Account extends Component {
@@ -23,8 +29,6 @@ export default class Account extends Component {
     }
 }
 
-const deviceHeight = Dimensions.get('window').height
-const deviceWidth = Dimensions.get('window').width
 const s = StyleSheet.create({
     layout: {
         flex: 1,

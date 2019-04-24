@@ -1,25 +1,22 @@
 import React, { Component } from 'react'
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps'
 import {
-    Dimensions, View,
-    Text, Picker,
-    Button, Image,
-    TouchableOpacity,
     ActivityIndicator,
     AsyncStorage,
-    StyleSheet
+    Button,
+    Dimensions,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    View,
 } from 'react-native'
-
-const { width, height } = Dimensions.get('window')
 
 import { Query } from 'react-apollo'
 import { getGarbages } from '../graphQl'
-import { ConvertCoordinate, ConvertToImage } from '../Helper'
+import { ConvertCoordinate } from '../Helper'
 import { Modal } from 'react-native-paper';
-// import { Button } from 'react-native-paper';
-// import { GetDetail } from '../Component/GetDetail'
-
 import { MapNavigation } from '../Component/MapNavigation'
+const { width, height } = Dimensions.get('window')
 
 
 export default class Detail extends Component {
@@ -35,7 +32,6 @@ export default class Detail extends Component {
         findmetal: true,
         findpaper: false,
         findcardboard: false
-
     }
 
     componentDidMount = () => {
@@ -63,7 +59,7 @@ export default class Detail extends Component {
             cardboard: allData.filter(e => { return e.type == 'cardboard' }).length,
             glass: allData.filter(e => { return e.type == 'glass' }).length,
             modalVisible: true,
-            loading : false
+            loading: false
         })
     }
 
@@ -74,12 +70,14 @@ export default class Detail extends Component {
             return (
                 <View style={s.loading}>
                     <ActivityIndicator size="large" color='gold' />
+                    <Text style={{ color: 'gold' }}>Please wait ... </Text>
                 </View>)
         }
         if (!token) {
             return (
                 <View style={s.loading}>
                     <ActivityIndicator size="large" color='gold' />
+                    <Text style={{ color: 'gold' }}>Please wait ... </Text>
                 </View>)
         }
         if (token) {
@@ -114,8 +112,7 @@ export default class Detail extends Component {
                                                 pinColor={e.color}
                                                 coordinate={ConvertCoordinate(e.coordinate)}>
                                                 <Callout
-                                                    onPress={() => this.setState({ [`find${e.type}`]: true })}
-                                                >
+                                                    onPress={() => this.setState({ [`find${e.type}`]: true })}                                                >
                                                     <Text>{e.type}</Text>
                                                 </Callout>
                                             </Marker>
@@ -132,7 +129,7 @@ export default class Detail extends Component {
                                     <Button
                                         title="see detail"
                                         onPress={() => {
-                                            this.setState({loading: true})
+                                            this.setState({ loading: true })
                                             this.getDetail(data.garbages)
                                         }} />
                                 </View>
@@ -145,7 +142,7 @@ export default class Detail extends Component {
                                     onRequestClose={() => {
                                         Alert.alert('Modal has been closed.');
                                     }}>
-                                    <View style={{ backgroundColor : 'white', marginTop: 22, justifyContent: 'center', alignItems: 'center' }}>
+                                    <View style={{ backgroundColor: 'white', marginTop: 22, justifyContent: 'center', alignItems: 'center' }}>
 
 
                                         <Text > metal :  {this.state.metal}</Text>
@@ -158,7 +155,6 @@ export default class Detail extends Component {
                                             onPress={() => this.setState({ modalVisible: false })}>
                                             <Text>close</Text>
                                         </TouchableOpacity>
-
                                     </View>
                                 </Modal>
                             </>

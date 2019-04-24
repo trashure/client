@@ -1,14 +1,15 @@
 import React, { Component } from 'react'
 import {
-    View, Text, Image,
-    FlatList, Dimensions,
+    ActivityIndicator,
     AsyncStorage,
-    StyleSheet, ScrollView, ActivityIndicator
+    Dimensions,
+    FlatList,
+    Image,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native'
-import { connect } from 'react-redux'
-import { fecthData } from '../store/Actions/Api'
-import Icon from 'react-native-vector-icons/Entypo'
-import { Query, Mutation, graphql } from 'react-apollo';
+import { Query } from 'react-apollo';
 import { getGarbages } from '../graphQl'
 const deviceWidth = Dimensions.get('window').width;
 const deviceHeight = Dimensions.get('window').height;
@@ -31,7 +32,6 @@ class Home extends Component {
     componentDidMount = () => {
         this._retrieveData();
         console.log('Home Screen');
-
     }
 
     _retrieveData = async () => {
@@ -56,7 +56,7 @@ class Home extends Component {
                 <ActivityIndicator size="large" color='gold' />
                 <Text>fetch data ... </Text>
             </View>
-            
+
         )
         if (this.state.token) {
             return (
@@ -105,8 +105,6 @@ class Home extends Component {
                 </View >
             )
         }
-
-
     }
 }
 

@@ -11,13 +11,8 @@ import {
     StyleSheet
 } from 'react-native'
 
-import Icon from "react-native-vector-icons/FontAwesome"
 import FeatherIcon from "react-native-vector-icons/Feather"
-import { connect } from 'react-redux'
-import { UserLogin } from '../store/Actions/Api'
-
-import { Query, Mutation } from 'react-apollo'
-
+import { Mutation } from 'react-apollo'
 import { login } from '../graphQl/index'
 
 

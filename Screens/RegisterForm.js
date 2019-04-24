@@ -1,20 +1,24 @@
 import React, { Component } from 'react'
 import {
-    View, TextInput,
-    KeyboardAvoidingView, Dimensions,
-    Button, Text, TouchableOpacity, StyleSheet, Image
+    Button, 
+    Dimensions,
+    Image,
+    KeyboardAvoidingView, 
+    StyleSheet, 
+    Text, 
+    TextInput,
+    TouchableOpacity, 
+    View, 
 } from 'react-native'
 
 import FeatherIcon from "react-native-vector-icons/Feather"
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
-import { Query, Mutation } from 'react-apollo'
-
-import { register, login } from '../graphQl/index'
+import { Mutation } from 'react-apollo'
+import { register } from '../graphQl/index'
 
 
 export default class RegisterForm extends Component {
     static navigationOptions = {
-        //To hide the ActionBar/NavigationBar
         header: null,
     }
 
@@ -27,8 +31,8 @@ export default class RegisterForm extends Component {
     render() {
         return (
 
-            <Mutation mutation={login}>
-                {(login, { data }) => (
+            <Mutation mutation={register}>
+                {(register, { data }) => (
                     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
                         <View style={s.layout}>
                             <View style={{ flex: 1, alignItems: 'center', }}>
@@ -64,17 +68,17 @@ export default class RegisterForm extends Component {
                                     style={s.button}>
                                     <Button
                                         onPress={() => {
-                                            const { email, password } = this.state
-                                            login({
+                                            const { name, email, password } = this.state
+                                            register({
                                                 variables: {
+                                                    name,
                                                     email,
                                                     password
                                                 }
                                             })
                                                 .then(({ data }) => {
-                                                    this.props.navigation.navigate('FirstRender')
-                                                    // console.log(data.login.token);
-                                                    // this._storeData(data.login.token)
+                                                    this.setState({ name: '', email: '', password: '' })
+                                                    this.props.navigation.navigate('LoginPage')
                                                 })
                                                 .catch(err => {
                                                     console.log(err);

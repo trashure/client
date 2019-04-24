@@ -1,24 +1,32 @@
 import React, { Component } from 'react'
-import { Camera, Permissions, Location, } from 'expo';
 import {
-    View, Text, TouchableOpacity,
-    Dimensions, Alert, AsyncStorage, Image, Button, ActivityIndicator, StyleSheet, KeyboardAvoidingView
+    Camera,
+    Location,
+    Permissions,
+} from 'expo';
+import {
+    ActivityIndicator,
+    Alert,
+    AsyncStorage,
+    Button,
+    Dimensions,
+    Image,
+    KeyboardAvoidingView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native'
 
 import Icon from "react-native-vector-icons/FontAwesome"
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons"
-// import Geolocation from 'react-native-geolocation-service';
-
-import { connect } from 'react-redux'
-
-import { sendRawData } from '../store/Actions/Api'
-
+import { MaterialIcons } from '@expo/vector-icons';
 import { Mutation } from 'react-apollo'
+import { sendRawData } from '../store/Actions/Api'
 import { createTrash, getGarbages, getCollections } from '../graphQl/index.js'
 import { TextInput } from 'react-native-gesture-handler';
-import { MaterialIcons } from '@expo/vector-icons';
 import { ImageManipulator } from 'expo';
-import { NavigationEvents } from 'react-navigation';
+import { connect } from 'react-redux'
 
 
 const initialState = {

@@ -1,17 +1,19 @@
 import React, { Component } from 'react'
 import { Camera, Permissions, Location, } from 'expo';
 import {
-    View, Text, TouchableOpacity,
-    Dimensions, Alert, AsyncStorage, Image, Button, ActivityIndicator, StyleSheet
+    ActivityIndicator,
+    AsyncStorage,
+    Dimensions,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native'
 
 import Icon from "react-native-vector-icons/FontAwesome"
-import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons"
-import { connect } from 'react-redux'
 import { sendRawData } from '../store/Actions/Api'
 import { Mutation } from 'react-apollo'
 import { IOT } from '../graphQl/index.js'
-import { TextInput } from 'react-native-gesture-handler';
 import { ImageManipulator } from 'expo';
 
 class Iot extends Component {
@@ -35,13 +37,9 @@ class Iot extends Component {
         console.log('Iot Screen');
         const { navigation } = this.props;
         navigation.addListener('willFocus', () =>
-            // console.log('focused')
-
             this.setState({ focusedScreen: true })
         );
         navigation.addListener('willBlur', () =>
-            // console.log('un focused')
-
             this.setState({ focusedScreen: false })
         );
 
@@ -92,7 +90,7 @@ class Iot extends Component {
             )
             console.log(resizedPhoto)
 
-            
+
             iot({
                 variables: {
                     path: resizedPhoto.base64
