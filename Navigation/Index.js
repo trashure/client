@@ -24,6 +24,13 @@ import Detail from '../Screens/Detail';
 import Iot from '../Screens/Iot';
 import Account from '../Screens/Account';
 
+import PaperMap from '../Screens/papermap'
+import MetalMap from '../Screens/MetalMap'
+import GlassMap from '../Screens/GlassMap'
+import CardboardMap from '../Screens/CardboardMap'
+import PlasticMap from '../Screens/PlasticMap'
+import { concat } from 'apollo-link';
+
 const LoginStackNav = createStackNavigator({
     LoginPage: {
         screen: Login,
@@ -63,6 +70,48 @@ const PictureNav = createStackNavigator({
     }
 })
 
+const mapStack = createStackNavigator({
+    Maps: {
+        screen: Detail,
+        navigationOptions: {
+            header: null
+        }
+    },
+    PaperMap: {
+        screen: PaperMap,
+        navigationOptions: {
+            header: null
+        }
+    },
+    MetalMap: {
+        screen: MetalMap,
+        navigationOptions: {
+            header: null
+        }
+    },
+    GlassMap: {
+        screen: GlassMap,
+        navigationOptions: {
+            header: null
+        }
+    },
+    CardboardMap: {
+        screen: CardboardMap,
+        navigationOptions: {
+            header: null
+        }
+    },
+    PlasticMap: {
+        screen: PlasticMap,
+        navigationOptions: {
+            header: null
+        }
+    }
+
+}, {
+    initialRouteName: 'Maps',
+})
+
 const HomeRoute = createBottomTabNavigator({
 
     Home: {
@@ -88,7 +137,7 @@ const HomeRoute = createBottomTabNavigator({
         }
     },
     Maps: {
-        screen: Detail,
+        screen: mapStack,
         navigationOptions: {
             tabBarLabel: 'Maps',
             tabBarIcon: ({ tintColor }) => (<MaterialCommunityIcons name="map-marker-multiple" color={tintColor} size={24} />)
@@ -113,7 +162,9 @@ const HomeRoute = createBottomTabNavigator({
         }
     }
 }, {
+
         initialRouteName: 'Home',
+      development
         tabBarOptions: {
             activeTintColor: 'gold',
             inactiveTintColor: 'white',

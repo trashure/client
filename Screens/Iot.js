@@ -96,18 +96,11 @@ class Iot extends Component {
                     path: resizedPhoto.base64
                 }
             })
+=
             this.setState({
                 cameraLoading: false
             })
-            // this.setState({
-            //     cameraLoading: false,
-            //     focusedScreen: false,
-            //     imageUri: ''
-            // }, () => {
-            //     this.setState({
-            //         focusedScreen: true
-            //     })
-            // })
+
         }
     }
 
