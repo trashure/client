@@ -3,7 +3,7 @@ import {
     View, Text, Image,
     FlatList, Dimensions,
     AsyncStorage,
-    StyleSheet
+    StyleSheet, ScrollView
 } from 'react-native'
 import { connect } from 'react-redux'
 import { fecthData } from '../store/Actions/Api'
@@ -30,6 +30,8 @@ class Home extends Component {
 
     componentDidMount = () => {
         this._retrieveData();
+        console.log('Home Screen');
+        
     }
 
     _retrieveData = async () => {
@@ -58,6 +60,7 @@ class Home extends Component {
                                 {({ loading, error, data }) => {
                                     if (loading) return loading;
                                     if (error) return error;
+                                    
                                     if (data) {
                                         return (
                                             <FlatList

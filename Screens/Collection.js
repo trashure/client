@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, FlatList, Dimensions, Image, StyleSheet, TouchableOpacity, Modal, AsyncStorage } from 'react-native'
+import { View, Text, FlatList, Dimensions, Image, StyleSheet, TouchableOpacity, Modal, AsyncStorage, Alert } from 'react-native'
 import { AntDesign } from '@expo/vector-icons';
 import { Button } from 'react-native-paper';
 import { Query, Mutation, graphql } from 'react-apollo';
@@ -10,6 +10,7 @@ const { width, height } = Dimensions.get('window');
 
 export default class Collection extends Component {
     state = {
+        token: '',
         modalVisible: false,
         selectionItem: {},
         myCollection: [],
@@ -17,6 +18,8 @@ export default class Collection extends Component {
 
     componentDidMount = () => {
         this._retrieveData();
+        console.log('Collection Screen');
+
     }
 
     _retrieveData = async () => {
@@ -27,6 +30,8 @@ export default class Collection extends Component {
                     token: value
                 })
             }
+            console.log(this.state.token);
+            
         } catch (error) {
             // Error retrieving data
         }
@@ -35,33 +40,40 @@ export default class Collection extends Component {
     render() {
         return (
             <View>
-
-                <Query query={getCollections} variables={{ token: this.state.token }}>
-                    {({ loading, error, data }) => {
-                        if (loading) return <View><Text>loading</Text></View>;
-                        if (error) return <View><Text>error</Text></View>;
-                        if (data) {
-                            return (
-                                <View style={s.collection}>
-                                    {
-                                        data.collections.map(e =>
-                                            (
-                                                <TouchableOpacity
-                                                    key={e._id}
-                                                    onPress={() => this.setState({ modalVisible: true, selectionItem: e })}                                        >
-                                                    <Image
-                                                        style={{ width: width / 3 - 3, height: width / 3 - 3, margin: 1 }}
-                                                        source={{ uri: e.path }}
-                                                    />
-                                                </TouchableOpacity>
-                                            )
+                {
+                    this.state.token ?
+                        (
+                            <Query query={getCollections} variables={{ token: this.state.token }}>
+                                {({ loading, error, data }) => {
+                                    if (loading) return <View><Text>loading</Text></View>;
+                                    if (error) return <View><Text>error</Text></View>;
+                                    if (data) {
+                                        return (
+                                            <View style={s.collection}>
+                                                {
+                                                    data.collections.map(e =>
+                                                        (
+                                                            <TouchableOpacity
+                                                                key={e._id}
+                                                                onPress={() => this.setState({ modalVisible: true, selectionItem: e })}                                        >
+                                                                <Image
+                                                                    style={{ width: width / 3 - 3, height: width / 3 - 3, margin: 1 }}
+                                                                    source={{ uri: e.path }}
+                                                                />
+                                                            </TouchableOpacity>
+                                                        )
+                                                    )
+                                                }
+                                            </View>
                                         )
                                     }
-                                </View>
-                            )
-                        }
-                    }}
-                </Query>
+                                }}
+                            </Query>
+                        ) : (
+                            <Text>Login Duls</Text>
+                        )
+                }
+
 
 
                 {/* M O D A L */}
@@ -70,7 +82,7 @@ export default class Collection extends Component {
                     transparent={false}
                     visible={this.state.modalVisible}
                     onRequestClose={() => {
-                        Alert.alert('Modal has been closed.');
+                        this.setState({ modalVisible: false })
                     }}>
                     <View style={{ flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center' }}>
                         <FlatList
@@ -94,7 +106,7 @@ export default class Collection extends Component {
                                         <TouchableOpacity
                                             style={{
                                                 backgroundColor: 'gold',
-                                                marginTop:10,
+                                                marginTop: 10,
                                                 padding: 5,
                                                 width: 80,
                                                 justifyContent: 'center',

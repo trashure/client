@@ -12,8 +12,7 @@ import { sendRawData } from '../store/Actions/Api'
 import { Mutation } from 'react-apollo'
 import { IOT } from '../graphQl/index.js'
 import { TextInput } from 'react-native-gesture-handler';
-
-
+import { ImageManipulator } from 'expo';
 
 class Iot extends Component {
     state = {
@@ -22,6 +21,7 @@ class Iot extends Component {
         coordinate: {},
         token: '',
         imageUri: '',
+        focusedScreen: true,
         hasLocationPermission: null,
         hasCameraPermission: null,
         type: Camera.Constants.Type.back,
@@ -32,6 +32,18 @@ class Iot extends Component {
         const { status } = await Permissions.askAsync(Permissions.CAMERA);
         this.setState({ hasCameraPermission: status === 'granted' })
         this._retrieveData()
+        console.log('Iot Screen');
+        const { navigation } = this.props;
+        navigation.addListener('willFocus', () =>
+            // console.log('focused')
+
+            this.setState({ focusedScreen: true })
+        );
+        navigation.addListener('willBlur', () =>
+            // console.log('un focused')
+
+            this.setState({ focusedScreen: false })
+        );
 
     }
 
@@ -60,23 +72,31 @@ class Iot extends Component {
         if (this.camera) {
             console.log('Taking photo');
             const options = {
-                quality: 0.01, base64: true, fixOrientation: true,
+                quality: 0.5, base64: true, fixOrientation: true,
                 exif: true
             };
-            let photo = await this.camera.takePictureAsync(options).then(photo => {
-                photo.exif.Orientation = 1;
-                return photo
-            });
+            // let photo = await this.camera.takePictureAsync(options).then(photo => {
+            //     photo.exif.Orientation = 1;
+            //     return photo
+            // });
+
+            let photo = await this.camera.takePictureAsync(options);
+            let resizedPhoto = await ImageManipulator.manipulateAsync(
+                photo.uri,
+                [{ resize: { width: 200, height: 200 } }],
+                { compress: 1, format: "jpeg", base64: true }
+            )
+            console.log(resizedPhoto)
             iot({
                 variables: {
-                    path: photo.base64
+                    path: resizedPhoto.base64
                 }
             })
         }
     }
 
     render() {
-        const { hasCameraPermission, imageUri, loading } = this.state;
+        const { hasCameraPermission, imageUri, loading, focusedScreen } = this.state;
         if (loading) return (<View>
             <ActivityIndicator
                 size="large"
@@ -88,7 +108,7 @@ class Iot extends Component {
             return <View />;
         } else if (hasCameraPermission === false) {
             return <Text>No access to camera</Text>;
-        } else {
+        } else if (focusedScreen) {
             return (
                 <Mutation mutation={IOT}>{(iot, { data }) => (
                     <View style={{ flex: 1 }}>
@@ -106,9 +126,7 @@ class Iot extends Component {
                                 }}>
 
                                 <TouchableOpacity
-                                    onPress={
-                                        this.snapPhoto.bind(this, iot)
-                                    }
+                                    onPress={this.snapPhoto.bind(this, iot)}
                                     style={{
                                         alignSelf: 'flex-end',
                                         alignItems: 'flex-start',
@@ -123,6 +141,9 @@ class Iot extends Component {
                 )}
                 </Mutation>
             );
+        }
+        else {
+            return <Text>Masuk else</Text>
         }
     }
 }

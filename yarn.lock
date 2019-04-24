@@ -2900,6 +2900,11 @@ expo-image-loader-interface@~2.0.0:
   dependencies:
     expo-core "~2.0.0"
 
+expo-image-manipulator@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/expo-image-manipulator/-/expo-image-manipulator-4.0.0.tgz#455bb8d5ae9432aed0ed3cba5fb4e10ee1cc0112"
+  integrity sha512-5na++LDjuIloPornh+0v+kgy0f2b1PixnP+QJ2xUpGvE0Eih2y5zbf6RnXsIEpIXqj7MwYI/k02sSG8nztxnDw==
+
 expo-local-authentication@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/expo-local-authentication/-/expo-local-authentication-2.0.0.tgz#b16763242ab0ebff902e4c4545052d114ecf3d4a"
