@@ -71,6 +71,7 @@ query garbages($token: String!){
             type
             createdAt
             coordinate
+            address
             color
             userID{
                 name
@@ -90,6 +91,7 @@ query collections($token: String!){
             createdAt
             color
             coordinate
+            address
             userID{
                 name
             }

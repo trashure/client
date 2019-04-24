@@ -113,7 +113,7 @@ const HomeRoute = createBottomTabNavigator({
         }
     }
 }, {
-        initialRouteName: 'Camera',
+        initialRouteName: 'Home',
         tabBarOptions: {
             activeTintColor: 'gold',
             inactiveTintColor: 'white',
